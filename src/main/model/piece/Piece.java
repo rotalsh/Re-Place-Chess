@@ -35,10 +35,10 @@ public abstract class Piece {
     }
 
     // MODIFIES: this
-    // EFFECTS: moves the piece's x and y by the given vector
+    // EFFECTS: moves the piece's x and y to the given vector
     public void move(Vector vec) {
-        posX += vec.getXcomp();
-        posY += vec.getYcomp();
+        posX = vec.getXcomp();
+        posY = vec.getYcomp();
     }
 
     // GETTERS
@@ -97,11 +97,11 @@ public abstract class Piece {
                 Vector newMoveVec = move.subVector(oldMoveVec);
                 count++;
                 if (newMoveVec.isZero() && count <= magnitude) {
-                    move(move);
                     return true;
                 } else if (count > magnitude) {
                     break;
-                } else if (!newMoveVec.isStrictlySmaller(oldMoveVec) || !newMoveVec.hasSwitchedDirections(oldMoveVec)) {
+                } else if (!newMoveVec.isStrictlySmaller(oldMoveVec)
+                        || !newMoveVec.hasSwitchedDirections(oldMoveVec)) {
                     break;
                 }
                 oldMoveVec = newMoveVec;

@@ -11,10 +11,21 @@ public class Board {
     private List<Piece> capturedPieces;
     private boolean gameOver;
     private Team turn;
+    private List<String> movesMade;
 
     // EFFECTS: creates a new board at the start of the game, with pieces at their respective positions,
     //          no captured pieces, a horizontal size of 3 and vertical of 4, and starts as white's turn
     public Board() {
+        rePlaceBoardStart();
+        capturedPieces = new ArrayList<>();
+        movesMade = new ArrayList<>();
+        gameOver = false;
+        turn = Team.WHITE;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: sets up the board according to the re-place board start
+    public void rePlaceBoardStart() {
         boardPieces = new Piece[][]{
                 {new Rook(0, 0, Team.BLACK),
                         new King(1, 0, Team.BLACK),
@@ -24,36 +35,9 @@ public class Board {
                 {new Bishop(0, 3, Team.WHITE),
                         new King(1, 3, Team.WHITE),
                         new Rook(2, 3, Team.WHITE)}};
-        capturedPieces = new ArrayList<>();
-        gameOver = false;
-        turn = Team.WHITE;
     }
 
     // TODO specifications
-    public boolean movePiece(Piece piece, Vector movePos) {
-        Vector piecePos = getPiecePos(piece);
-        if (piecePos == null) {
-            return false;
-        }
-        Piece currPiece = boardPieces[piecePos.getYcomp()][piecePos.getXcomp()];
-        Piece pieceAtMovePos = boardPieces[movePos.getYcomp()][movePos.getXcomp()];
-        if (currPiece.validMove(movePos) && currPiece.canTake(pieceAtMovePos)) {
-            boardPieces[movePos.getYcomp()][movePos.getXcomp()] = currPiece;
-            boardPieces[piecePos.getYcomp()][piecePos.getXcomp()] = null;
-            if (pieceAtMovePos != null) {
-                pieceAtMovePos.setOppositeTeam();
-                addToCapturedPieces(pieceAtMovePos);
-            }
-            changeTurn();
-            checkPromotion();
-            endGame();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    // TODO spefications
     public void addToCapturedPieces(Piece pieceAtMovePos) {
         if (pieceAtMovePos instanceof Queen) {
             capturedPieces.add(new Pawn(pieceAtMovePos.getTeam()));
@@ -76,7 +60,7 @@ public class Board {
 
     // TODO specifications
     public void endGame() {
-        King king = new King(turn);
+        King king = new King(notTurn());
         if (capturedPieces.contains(king)) {
             gameOver = true;
         }
@@ -84,9 +68,6 @@ public class Board {
 
     // TODO specifications
     public boolean placePiece(Piece piece, Vector movePos) {
-        if (!canPlace(piece, movePos)) {
-            return false;
-        }
         int x = movePos.getXcomp();
         int y = movePos.getYcomp();
         for (Piece capturedPiece : capturedPieces) {
@@ -94,10 +75,11 @@ public class Board {
                 capturedPiece.placePiece(movePos);
                 boardPieces[y][x] = capturedPiece;
                 capturedPieces.remove(capturedPiece);
+                changeTurn();
                 return true;
             }
         }
-        return false; // stub
+        return false;
     }
 
     // TODO specifications
@@ -146,14 +128,81 @@ public class Board {
     }
 
     // TODO specifications
-    public Vector getPiecePos(Piece piece) {
+    public boolean moveFoundPiece(Vector piecePos, Vector movePos) {
+        Piece currPiece = boardPieces[piecePos.getYcomp()][piecePos.getXcomp()];
+        Piece pieceAtMovePos = boardPieces[movePos.getYcomp()][movePos.getXcomp()];
+        if (currPiece.canTake(pieceAtMovePos)) {
+            boardPieces[movePos.getYcomp()][movePos.getXcomp()] = currPiece;
+            currPiece.move(movePos);
+            boardPieces[piecePos.getYcomp()][piecePos.getXcomp()] = null;
+            if (pieceAtMovePos != null) {
+                pieceAtMovePos.setOppositeTeam();
+                addToCapturedPieces(pieceAtMovePos);
+            }
+            changeTurn();
+            checkPromotion();
+            endGame();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // TODO specifications
+    public Vector getPiecePos(Piece piece, Vector movePos) {
+        Vector vec = null;
+        int count = 0;
         for (int i = 0; i < boardPieces.length; i++) {
             for (int j = 0; j < boardPieces[i].length; j++) {
-                if (piece.equals(boardPieces[i][j])) {
-                    return new Vector(j, i);
+                if (piece.equals(boardPieces[i][j]) && boardPieces[i][j].validMove(movePos)) {
+                    vec = new Vector(j, i);
+                    count++;
                 }
             }
         }
+        if (count == 1) {
+            return vec;
+        }
+        return null;
+    }
+
+    // TODO specifications
+    public Vector getPiecePosFromColumn(Piece piece, Vector movePos, int x) {
+        Vector vec = null;
+        int count = 0;
+        if (x >= boardPieces[0].length) {
+            return null;
+        }
+
+        for (int i = 0; i < boardPieces.length; i++) {
+            if (piece.equals(boardPieces[i][x]) && boardPieces[i][x].validMove(movePos)) {
+                vec = new Vector(x, i);
+                count++;
+            }
+        }
+        if (count == 1) {
+            return vec;
+        }
+        return null;
+    }
+
+    // TODO specifications
+    public Vector getPiecePosFromRow(Piece piece, Vector movePos, int y) {
+        Vector vec = null;
+        int count = 0;
+        if (y >= boardPieces.length) {
+            return null;
+        }
+
+        for (int j = 0; j < boardPieces[y].length; j++) {
+            if (piece.equals(boardPieces[y][j]) && boardPieces[y][j].validMove(movePos)) {
+                vec = new Vector(j, y);
+            }
+        }
+        if (count == 1) {
+            return vec;
+        }
+
         return null;
     }
 
@@ -206,5 +255,27 @@ public class Board {
     // TODO specifications
     public boolean isGameOver() {
         return gameOver;
+    }
+
+    public String movesToString() {
+        return null; // stub
+    }
+
+    public int getBoardHeight() {
+        return boardPieces.length;
+    }
+
+    public int getBoardWidth() {
+        return boardPieces[0].length;
+    }
+
+    public Team notTurn() {
+        switch (turn) {
+            case WHITE:
+                return Team.BLACK;
+            case BLACK:
+                return Team.WHITE;
+        }
+        return null;
     }
 }
