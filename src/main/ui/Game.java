@@ -3,7 +3,7 @@ package ui;
 import model.Board;
 import model.Team;
 import model.Vector;
-import model.piece.Pawn;
+import model.piece.*;
 
 import java.util.Scanner;
 
@@ -21,7 +21,13 @@ public class Game {
             scanner = new Scanner(System.in);
             String input = scanner.next();
             if (input.equals("a")) {
-                board.movePiece(new Pawn(Team.BLACK), new Vector(1, 2));
+                board.movePiece(new Pawn(Team.WHITE), new Vector(1, 1));
+            } else if (input.equals("aa")) {
+                board.movePiece(new Pawn(Team.WHITE), new Vector(1, 0));
+            } else if (input.equals("b")) {
+                board.movePiece(new Rook(Team.BLACK), new Vector(1, 0));
+            } else if (input.equals("c")) {
+                board.movePiece(new Bishop(Team.BLACK), new Vector(1, 1));
             }
         }
     }

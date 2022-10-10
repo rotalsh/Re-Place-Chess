@@ -1,19 +1,19 @@
 package model.piece;
 
-import model.Vector;
 import model.Team;
+import model.Vector;
 
-public class Pawn extends Piece {
-
-    // TODO specifications
-    public Pawn(Team team) {
+public class Bishop extends Piece {
+    public Bishop(Team team) {
         super(team);
     }
 
-    // TODO specifications
-    public Pawn(int x, int y, Team team) {
+    public Bishop(int x, int y, Team team) {
         super(x, y, team);
-        moves.add(new Vector(0, -1));
+        moves.add(new Vector(1, 1));
+        moves.add(new Vector(-1, 1));
+        moves.add(new Vector(1, -1));
+        moves.add(new Vector(-1, -1));
         magnitude = 1;
     }
 
@@ -29,7 +29,7 @@ public class Pawn extends Piece {
                 teamLetter = "B";
                 break;
         }
-        return "P_" + teamLetter;
+        return "B_" + teamLetter;
     }
 
     // TODO specifications
@@ -39,10 +39,10 @@ public class Pawn extends Piece {
             return false;
         } else if (this == obj) {
             return true;
-        } else if (!(obj instanceof Pawn)) {
+        } else if (!(obj instanceof Bishop)) {
             return false;
         }
-        Pawn pawn = (Pawn) obj;
-        return pawn.getTeam() == this.getTeam();
+        Bishop bishop = (Bishop) obj;
+        return bishop.getTeam() == this.getTeam();
     }
 }

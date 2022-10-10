@@ -36,6 +36,13 @@ public abstract class Piece {
         posY += dy;
     }
 
+    // MODIFIES: this
+    // EFFECTS: moves the piece's x and y by the given vector
+    public void move(Vector vec) {
+        posX += vec.getXcomp();
+        posY += vec.getYcomp();
+    }
+
     // GETTERS
 
     // EFFECTS: returns true if state of piece is captured;
@@ -84,6 +91,7 @@ public abstract class Piece {
         }
     }
 
+    // TODO specifications
     public boolean validMove(Vector movePos) {
         Vector oldMoveVec = getPosVec().subVector(movePos);
         for (Vector move : moves) {
@@ -95,7 +103,7 @@ public abstract class Piece {
                 Vector newMoveVec = move.subVector(oldMoveVec);
                 count++;
                 if (newMoveVec.isZero() && count <= magnitude) {
-                    move(move.getXcomp(), move.getYcomp());
+                    move(move);
                     return true;
                 } else if (count > magnitude) {
                     break;
@@ -106,5 +114,16 @@ public abstract class Piece {
             }
         }
         return false;
+    }
+
+    // TODO specifications
+    public boolean canTake(Piece otherPiece) {
+        if (otherPiece == null) {
+            return true;
+        } else if (this.team != otherPiece.getTeam()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
