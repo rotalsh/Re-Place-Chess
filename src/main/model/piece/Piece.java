@@ -51,6 +51,14 @@ public abstract class Piece {
         return team;
     }
 
+    public int getPosX() {
+        return posX;
+    }
+
+    public int getPosY() {
+        return posY;
+    }
+
     // SETTERS
 
 
@@ -120,4 +128,6 @@ public abstract class Piece {
             return false;
         }
     }
+
+    public abstract String getLetter();
 }

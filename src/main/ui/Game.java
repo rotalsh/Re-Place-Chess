@@ -6,20 +6,25 @@ import model.piece.*;
 
 import java.util.Scanner;
 
+// Game application UI
 public class Game {
     private Scanner scanner;
     private Board board;
     private boolean keepPlaying;
 
+    // EFFECTS: runs the game application
     public Game() {
         runGame();
     }
 
+    // MODIFIES: this
+    // EFFECTS: processes user input
     private void runGame() {
         this.board = new Board();
         keepPlaying = true;
+        System.out.println("Press g in game to see list of moves made in game so far.");
         while (keepPlaying) {
-            System.out.println(board);
+            System.out.print(board);
             System.out.println(board.getTurn() + "'s turn.");
             scanner = new Scanner(System.in);
             String input = scanner.next();
@@ -28,24 +33,33 @@ public class Game {
         }
         if (board.isGameOver()) {
             gameOverText();
+            System.out.println("Moves made:");
+            System.out.println(board.movesToString());
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: makes the application stop once the game is over
     public void quitPlayingIfGameOver() {
         if (board.isGameOver()) {
             keepPlaying = false;
         }
     }
 
+    // EFFECTS: gives information about who won when the game ends
     public void gameOverText() {
         System.out.println(board);
         System.out.println(board.notTurn() + " has captured " + board.getTurn() + "'s king.");
         System.out.println(board.notTurn() + " wins!");
     }
 
+    // MODIFIES: this
+    // EFFECTS: processes user command
     public void interpret(String input) {
         if (input.equals("q")) {
             keepPlaying = false;
+        } else if (input.equals("g")) {
+            System.out.println(board.movesToString());
         } else if (String.valueOf(input.charAt(0)).equals("@")) {
             placeInterpret(input);
         } else {
@@ -53,6 +67,8 @@ public class Game {
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: processes a user move
     public void moveInterpret(String input) {
         if (input.length() > 4 || input.length() < 3) {
             System.out.println("Invalid notation! You've formatted your move incorrectly.");
@@ -67,7 +83,9 @@ public class Game {
         }
     }
 
-    // TODO specifications
+    // REQUIRES: input is 3 characters long
+    // MODIFIES: this
+    // EFFECTS: process a user move that is specifically three letters long
     public void moveInterpretThreeLetters(String input, Piece piece) {
         int x = getXPlace(input.charAt(1));
         int y = getYPlace(input.charAt(2));
@@ -79,7 +97,9 @@ public class Game {
         }
     }
 
-    // TODO specifications
+    // REQUIRES: input is 4 characters long
+    // MODIFIES: this
+    // EFFECTS: process a user move that is specifically four letters long
     public void moveInterpretFourLetters(String input, Piece piece) {
         Vector piecePos;
         int x = getXPlace(input.charAt(2));
@@ -101,6 +121,9 @@ public class Game {
         moveFromPiecePos(piecePos, new Vector(x, y));
     }
 
+    // REQUIRES: movePos is an actual position on the board
+    // MODIFIES: this
+    // EFFECTS: either tells player that their move is invalid or does the move on the board
     public void moveFromPiecePos(Vector piecePos, Vector movePos) {
         if (piecePos == null) {
             System.out.println("Invalid move! You do not have this piece on the board,");
@@ -113,6 +136,8 @@ public class Game {
         }
     }
 
+    // MODIFIES: this
+    // EFFECTS: either tells user their move is invalid or places the piece on the board
     public void placeInterpret(String input) {
         if (input.length() != 4) {
             System.out.println("Invalid notation! You've formatted your move incorrectly.");
@@ -133,17 +158,17 @@ public class Game {
         }
     }
 
-    // TODO
+    // EFFECTS: returns X position on board from a character
     public int getXPlace(char c) {
         return (c - 97);
     }
 
-    // TODO
+    // EFFECTS: returns Y position on board from a character
     public int getYPlace(char c) {
         return (48 + board.getBoardHeight() - c);
     }
 
-    // TODO
+    // EFFECTS: returns the piece associated with given string
     public Piece getPiece(String piece) {
         if (piece.equals("K")) {
             return new King(board.getTurn());

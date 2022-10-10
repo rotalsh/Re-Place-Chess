@@ -47,4 +47,9 @@ public class Queen extends Piece {
         Queen queen = (Queen) obj;
         return queen.getTeam() == this.getTeam();
     }
+
+    @Override
+    public String getLetter() {
+        return "Q";
+    }
 }

@@ -48,4 +48,9 @@ public class Rook extends Piece {
         Rook rook = (Rook) obj;
         return rook.getTeam() == this.getTeam();
     }
+
+    @Override
+    public String getLetter() {
+        return "R";
+    }
 }

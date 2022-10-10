@@ -72,6 +72,7 @@ public class Board {
         int y = movePos.getYcomp();
         for (Piece capturedPiece : capturedPieces) {
             if (piece.equals(capturedPiece)) {
+                addMove(capturedPiece, movePos);
                 capturedPiece.placePiece(movePos);
                 boardPieces[y][x] = capturedPiece;
                 capturedPieces.remove(capturedPiece);
@@ -132,6 +133,7 @@ public class Board {
         Piece currPiece = boardPieces[piecePos.getYcomp()][piecePos.getXcomp()];
         Piece pieceAtMovePos = boardPieces[movePos.getYcomp()][movePos.getXcomp()];
         if (currPiece.canTake(pieceAtMovePos)) {
+            addMove(currPiece, pieceAtMovePos, movePos);
             boardPieces[movePos.getYcomp()][movePos.getXcomp()] = currPiece;
             currPiece.move(movePos);
             boardPieces[piecePos.getYcomp()][piecePos.getXcomp()] = null;
@@ -145,6 +147,92 @@ public class Board {
             return true;
         } else {
             return false;
+        }
+    }
+
+    private void addMove(Piece currPiece, Vector movePos) {
+        String pieceLetter = currPiece.getLetter();
+        String moveString = vectorToString(movePos);
+        String total = "@" + pieceLetter + moveString;
+        movesMade.add(total);
+    }
+
+    public void addMove(Piece currPiece, Piece pieceAtMovePos, Vector movePos) {
+        String pieceLetter = currPiece.getLetter();
+        String extraLetter = "";
+        if (sameRow(currPiece)) {
+            extraLetter = posXToString(currPiece.getPosX());
+        } else if (sameColumn(currPiece)) {
+            extraLetter = posYToString(currPiece.getPosY());
+        }
+        String captureString = determineString(pieceAtMovePos);
+        String captureKing = determineIfCaptureKing(pieceAtMovePos);
+        String moveString = vectorToString(movePos);
+        String promoteToQueen = determinePromotion(currPiece, movePos);
+        String total = pieceLetter + extraLetter + captureString + moveString + promoteToQueen + captureKing;
+        movesMade.add(total);
+    }
+
+    public String determinePromotion(Piece currPiece, Vector movePos) {
+        if (currPiece.getTeam().equals(Team.WHITE) && movePos.getYcomp() == 0) {
+            return "=Q";
+        } else if (currPiece.getTeam().equals(Team.BLACK) && movePos.getYcomp() == getBoardHeight() - 1) {
+            return "=Q";
+        } else {
+            return "";
+        }
+    }
+
+    public String determineIfCaptureKing(Piece pieceAtMovePos) {
+        King king = new King(notTurn());
+        if (king.equals(pieceAtMovePos)) {
+            return "#";
+        } else {
+            return "";
+        }
+    }
+
+    public String vectorToString(Vector movePos) {
+        String x = posXToString(movePos.getXcomp());
+        String y = posYToString(movePos.getYcomp());
+        return x + y;
+    }
+
+    public String posXToString(int x) {
+        return String.valueOf((char) (x + 97));
+    }
+
+    public String posYToString(int y) {
+        return String.valueOf((char) (48 + getBoardHeight() - y));
+    }
+
+    public boolean sameRow(Piece currPiece) {
+        int row = currPiece.getPosY();
+        int count = 0;
+        for (int j = 0; j < boardPieces[row].length; j++) {
+            if (currPiece.equals(boardPieces[row][j])) {
+                count++;
+            }
+        }
+        return (count == 2);
+    }
+
+    public boolean sameColumn(Piece currPiece) {
+        int column = currPiece.getPosX();
+        int count = 0;
+        for (int i = 0; i < boardPieces.length; i++) {
+            if (currPiece.equals(boardPieces[i][column])) {
+                count++;
+            }
+        }
+        return (count == 2);
+    }
+
+    public String determineString(Piece pieceAtMovePos) {
+        if (pieceAtMovePos == null) {
+            return "";
+        } else {
+            return "x";
         }
     }
 
@@ -209,8 +297,9 @@ public class Board {
     // EFFECTS: returns the state of the board as a string
     @Override
     public String toString() {
-        String boardString = "";
+        String boardString = " -------------------\n";
         for (int i = 0; i < boardPieces.length; i++) {
+            boardString += boardPieces.length - i;
             for (int j = 0; j < boardPieces[i].length; j++) {
                 boardString += "| ";
                 if (boardPieces[i][j] == null) {
@@ -222,6 +311,7 @@ public class Board {
             }
             boardString += "|\n";
         }
+        boardString += "    a     b     c   \n";
         boardString += capturedPiecesAsString(capturedPieces, Team.BLACK);
         boardString += capturedPiecesAsString(capturedPieces, Team.WHITE);
 
@@ -258,7 +348,14 @@ public class Board {
     }
 
     public String movesToString() {
-        return null; // stub
+        String string = "";
+        for (int i = 0; i < movesMade.size(); i++) {
+            if (i % 2 == 0) {
+                string += (i / 2 + 1) + ". ";
+            }
+            string += movesMade.get(i) + " ";
+        }
+        return string; // stub
     }
 
     public int getBoardHeight() {

@@ -45,4 +45,9 @@ public class Bishop extends Piece {
         Bishop bishop = (Bishop) obj;
         return bishop.getTeam() == this.getTeam();
     }
+
+    @Override
+    public String getLetter() {
+        return "B";
+    }
 }

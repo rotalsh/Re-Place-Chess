@@ -49,4 +49,9 @@ public class King extends Piece {
         King king = (King) obj;
         return king.getTeam() == this.getTeam();
     }
+
+    @Override
+    public String getLetter() {
+        return "K";
+    }
 }

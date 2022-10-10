@@ -45,4 +45,9 @@ public class Pawn extends Piece {
         Pawn pawn = (Pawn) obj;
         return pawn.getTeam() == this.getTeam();
     }
+
+    @Override
+    public String getLetter() {
+        return "P";
+    }
 }
