@@ -10,7 +10,6 @@ public abstract class Piece {
 
     protected int posX;
     protected int posY;
-    protected boolean captured;
     protected Team team;
     protected List<Vector> moves;
     protected int magnitude;
@@ -24,7 +23,6 @@ public abstract class Piece {
     public Piece(int x, int y, Team team) {
         posX = x;
         posY = y;
-        captured = false;
         this.team = team;
         moves = new ArrayList<>();
     }
@@ -45,11 +43,6 @@ public abstract class Piece {
 
     // GETTERS
 
-    // EFFECTS: returns true if state of piece is captured;
-    public boolean isCaptured() {
-        return captured;
-    }
-
     public Vector getPosVec() {
         return new Vector(posX, posY);
     }
@@ -60,18 +53,19 @@ public abstract class Piece {
 
     // SETTERS
 
-    // MODIFIES: this
-    // EFFECTS: sets state of piece to captured
-    public void setCaptured() {
-        captured = true;
-    }
 
     // MODIFIES: this
-    // EFFECTS: places piece at given position, sets state of piece to not captured
+    // EFFECTS: places piece at given position
     public void placePiece(int x, int y) {
         posX = x;
         posY = y;
-        captured = false;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: places piece at given position according to vector sets state of piece to not captured
+    public void placePiece(Vector vec) {
+        posX = vec.getXcomp();
+        posY = vec.getYcomp();
     }
 
     // MODIFIES: this

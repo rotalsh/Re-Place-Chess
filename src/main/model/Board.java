@@ -8,12 +8,12 @@ import java.util.List;
 
 public class Board {
     private Piece[][] boardPieces;
-    private List<Piece> capturedWhitePieces;
-    private List<Piece> capturedBlackPieces;
+    private List<Piece> capturedPieces;
     private boolean gameOver;
+    private Team turn;
 
     // EFFECTS: creates a new board at the start of the game, with pieces at their respective positions,
-    //          no captured pieces, a horizontal size of 3 and vertical of 4
+    //          no captured pieces, a horizontal size of 3 and vertical of 4, and starts as white's turn
     public Board() {
         boardPieces = new Piece[][]{
                 {new Rook(0, 0, Team.BLACK),
@@ -24,9 +24,9 @@ public class Board {
                 {new Bishop(0, 3, Team.WHITE),
                         new King(1, 3, Team.WHITE),
                         new Rook(2, 3, Team.WHITE)}};
-        capturedWhitePieces = new ArrayList<>();
-        capturedBlackPieces = new ArrayList<>();
+        capturedPieces = new ArrayList<>();
         gameOver = false;
+        turn = Team.WHITE;
     }
 
     // TODO specifications
@@ -41,20 +41,85 @@ public class Board {
             boardPieces[movePos.getYcomp()][movePos.getXcomp()] = currPiece;
             boardPieces[piecePos.getYcomp()][piecePos.getXcomp()] = null;
             if (pieceAtMovePos != null) {
-                pieceAtMovePos.setCaptured();
                 pieceAtMovePos.setOppositeTeam();
-                placeInCaptured(pieceAtMovePos);
+                addToCapturedPieces(pieceAtMovePos);
             }
+            changeTurn();
             checkPromotion();
+            endGame();
             return true;
         } else {
             return false;
         }
     }
 
+    // TODO spefications
+    public void addToCapturedPieces(Piece pieceAtMovePos) {
+        if (pieceAtMovePos instanceof Queen) {
+            capturedPieces.add(new Pawn(pieceAtMovePos.getTeam()));
+        } else {
+            capturedPieces.add(pieceAtMovePos);
+        }
+    }
+
+    // TODO specifications
+    public void changeTurn() {
+        switch (turn) {
+            case WHITE:
+                turn = Team.BLACK;
+                break;
+            case BLACK:
+                turn = Team.WHITE;
+                break;
+        }
+    }
+
+    // TODO specifications
+    public void endGame() {
+        King king = new King(turn);
+        if (capturedPieces.contains(king)) {
+            gameOver = true;
+        }
+    }
+
     // TODO specifications
     public boolean placePiece(Piece piece, Vector movePos) {
-        return false;
+        if (!canPlace(piece, movePos)) {
+            return false;
+        }
+        int x = movePos.getXcomp();
+        int y = movePos.getYcomp();
+        for (Piece capturedPiece : capturedPieces) {
+            if (piece.equals(capturedPiece)) {
+                capturedPiece.placePiece(movePos);
+                boardPieces[y][x] = capturedPiece;
+                capturedPieces.remove(capturedPiece);
+                return true;
+            }
+        }
+        return false; // stub
+    }
+
+    // TODO specifications
+    public boolean canPlace(Piece piece, Vector movePos) {
+        int x = movePos.getXcomp();
+        int y = movePos.getYcomp();
+        if (boardPieces[y][x] != null) {
+            return false;
+        }
+        switch (piece.getTeam()) {
+            case WHITE:
+                if (y == 0) {
+                    return false;
+                }
+                break;
+            case BLACK:
+                if (y == boardPieces.length - 1) {
+                    return false;
+                }
+                break;
+        }
+        return true;
     }
 
     // TODO specifications
@@ -62,35 +127,22 @@ public class Board {
         for (int j = 0; j < boardPieces[0].length; j++) {
             Piece piece = boardPieces[0][j];
             if ((piece instanceof Pawn) && piece.getTeam().equals(Team.WHITE)) {
-                promotePawn(piece, new Vector(0, j));
+                promotePawn(piece, new Vector(j, 0));
             }
         }
         int lastRow = boardPieces.length - 1;
         for (int j = 0; j < boardPieces[lastRow].length; j++) {
             Piece piece = boardPieces[lastRow][j];
             if ((piece instanceof Pawn) && piece.getTeam().equals(Team.BLACK)) {
-                promotePawn(piece, new Vector(lastRow, j));
+                promotePawn(piece, new Vector(j, lastRow));
             }
         }
     }
 
-    public void promotePawn(Piece piece, Vector vector) {
-        int x = vector.getXcomp();
-        int y = vector.getYcomp();
-        boardPieces[x][y] = new Queen(x, y, piece.getTeam());
-    }
-
-    // TODO specifications
-    public void placeInCaptured(Piece piece) {
-        Team team = piece.getTeam();
-        switch (team) {
-            case WHITE:
-                capturedWhitePieces.add(piece);
-                break;
-            case BLACK:
-                capturedBlackPieces.add(piece);
-                break;
-        }
+    public void promotePawn(Piece piece, Vector vec) {
+        int x = vec.getXcomp();
+        int y = vec.getYcomp();
+        boardPieces[y][x] = new Queen(x, y, piece.getTeam());
     }
 
     // TODO specifications
@@ -121,8 +173,8 @@ public class Board {
             }
             boardString += "|\n";
         }
-        boardString += capturedPiecesAsString(capturedBlackPieces, Team.BLACK);
-        boardString += capturedPiecesAsString(capturedWhitePieces, Team.WHITE);
+        boardString += capturedPiecesAsString(capturedPieces, Team.BLACK);
+        boardString += capturedPiecesAsString(capturedPieces, Team.WHITE);
 
         return boardString;
     }
@@ -139,8 +191,20 @@ public class Board {
                 break;
         }
         for (Piece piece : pieces) {
-            piecesString += " " + piece.toString();
+            if (piece.getTeam().equals(team)) {
+                piecesString += " " + piece.toString();
+            }
         }
         return piecesString + "\n";
+    }
+
+    // TODO specifications
+    public Team getTurn() {
+        return turn;
+    }
+
+    // TODO specifications
+    public boolean isGameOver() {
+        return gameOver;
     }
 }
