@@ -23,7 +23,7 @@ public class Game {
     private void runGame() {
         this.board = new Board();
         keepPlaying = true;
-        System.out.println("Press g in game to see list of moves made in game so far.");
+        System.out.println("Press m in game to see list of moves made in game so far.");
         while (keepPlaying) {
             System.out.print(board);
             System.out.println(capitalizeFirstOnly(board.getTurn().name()) + "'s turn.");
@@ -60,7 +60,7 @@ public class Game {
     public void interpret(String input) {
         if (input.equals("q")) {
             keepPlaying = false;
-        } else if (input.equals("g")) {
+        } else if (input.equals("m")) {
             System.out.println(board.movesToString());
         } else if (String.valueOf(input.charAt(0)).equals("@")) {
             placeInterpret(input);

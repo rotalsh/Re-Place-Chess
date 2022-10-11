@@ -115,13 +115,10 @@ public abstract class Piece {
     // MODIFIES: this
     // EFFECTS: sets the team of piece from white to black and vice versa
     public void setOppositeTeam() {
-        switch (team) {
-            case WHITE:
-                team = Team.BLACK;
-                break;
-            case BLACK:
-                team = Team.WHITE;
-                break;
+        if (team.equals(Team.WHITE)) {
+            team = Team.BLACK;
+        } else {
+            team = Team.WHITE;
         }
     }
 
@@ -129,13 +126,10 @@ public abstract class Piece {
     @Override
     public String toString() {
         String teamLetter = "";
-        switch (team) {
-            case WHITE:
-                teamLetter = "W";
-                break;
-            case BLACK:
-                teamLetter = "B";
-                break;
+        if (team.equals(Team.WHITE)) {
+            teamLetter = "W";
+        } else {
+            teamLetter = "B";
         }
         return getLetter() + "_" + teamLetter;
     }
