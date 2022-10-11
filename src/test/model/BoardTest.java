@@ -494,4 +494,181 @@ public class BoardTest {
         assertEquals("", b.determineString(null));
         assertEquals("x", b.determineString(pw));
     }
+
+    @Test
+    public void testGetPiecePosNoSetup() {
+        assertEquals(null, b.getPiecePos(qw, v11));
+        assertEquals(rw.getPosVec(), b.getPiecePos(rw2, v22));;
+    }
+
+    @Test
+    public void testGetPiecePosSameRow() {
+        assertFalse(b.sameRow(rw));
+        b.moveFoundPiece(v13, v22);
+        b.changeTurn();
+        b.moveFoundPiece(v12, v11);
+        b.changeTurn();
+        b.moveFoundPiece(v03, v12);
+        b.changeTurn();
+        b.addToCapturedPieces(rw2);
+        b.placePiece(rw2, v03);
+        assertEquals(null, b.getPiecePos(rw, v13));
+    }
+
+    @Test
+    public void testGetPiecePosSameColumn() {
+        assertFalse(b.sameColumn(rw));
+        b.addToCapturedPieces(rw2);
+        b.placePiece(rw2, v21);
+        assertEquals(null, b.getPiecePos(rw, v22));
+    }
+
+    @Test
+    public void testGetPiecePosInvalidMove() {
+        assertEquals(null, b.getPiecePos(rw, v11));
+        assertEquals(null, b.getPiecePos(rw2, v23));;
+    }
+
+    @Test
+    public void testGetPieceFromColumnPosNoSetup() {
+        assertEquals(null, b.getPiecePosFromColumn(qw, v11, 2));
+        assertEquals(rw.getPosVec(), b.getPiecePosFromColumn(rw2, v22, 2));;
+    }
+
+    @Test
+    public void testGetPieceFromColumnPosSameRow() {
+        assertFalse(b.sameRow(rw));
+        b.moveFoundPiece(v13, v22);
+        b.changeTurn();
+        b.moveFoundPiece(v12, v11);
+        b.changeTurn();
+        b.moveFoundPiece(v03, v12);
+        b.changeTurn();
+        b.addToCapturedPieces(rw2);
+        b.placePiece(rw2, v03);
+        assertEquals(rw.getPosVec(), b.getPiecePosFromColumn(rw, v13, 2));
+        assertEquals(null, b.getPiecePosFromColumn(rw, v13, 1));
+        assertEquals(rw2.getPosVec(), b.getPiecePosFromColumn(rw, v13, 0));
+    }
+
+    @Test
+    public void testGetPiecePosFromColumnSameColumn() {
+        assertFalse(b.sameColumn(rw));
+        b.addToCapturedPieces(rw2);
+        b.placePiece(rw2, v21);
+        assertEquals(null, b.getPiecePosFromColumn(rw, v22, 2));
+        assertEquals(null, b.getPiecePosFromColumn(rw, v22, 0));
+
+    }
+
+    @Test
+    public void testGetPiecePosFromColumnInvalidMove() {
+        assertEquals(null, b.getPiecePosFromColumn(rw, v11, 0));
+        assertEquals(null, b.getPiecePosFromColumn(rw2, v23, 2));
+    }
+
+    @Test
+    public void testGetPieceFromRowPosNoSetup() {
+        assertEquals(null, b.getPiecePosFromRow(qw, v11, 2));
+        assertEquals(rw.getPosVec(), b.getPiecePosFromRow(rw2, v22, 3));;
+    }
+
+    @Test
+    public void testGetPieceFromRowPosSameRow() {
+        assertFalse(b.sameRow(rw));
+        b.moveFoundPiece(v13, v22);
+        b.changeTurn();
+        b.moveFoundPiece(v12, v11);
+        b.changeTurn();
+        b.moveFoundPiece(v03, v12);
+        b.changeTurn();
+        b.addToCapturedPieces(rw2);
+        b.placePiece(rw2, v03);
+        assertEquals(null, b.getPiecePosFromRow(rw, v13, 2));
+        assertEquals(null, b.getPiecePosFromRow(rw, v13, 3));
+    }
+
+    @Test
+    public void testGetPiecePosFromRowSameColumn() {
+        assertFalse(b.sameColumn(rw));
+        b.addToCapturedPieces(rw2);
+        b.placePiece(rw2, v21);
+        assertEquals(rw.getPosVec(), b.getPiecePosFromRow(rw, v22, 3));
+        assertEquals(null, b.getPiecePosFromRow(rw, v22, 2));
+        assertEquals(rw2.getPosVec(), b.getPiecePosFromRow(rw, v22, 1));
+
+    }
+
+    @Test
+    public void testGetPiecePosFromRowInvalidMove() {
+        assertEquals(null, b.getPiecePosFromRow(rw, v11, 2));
+        assertEquals(null, b.getPiecePosFromRow(rw2, v23, 3));
+    }
+
+    @Test
+    public void testGetPiecePosAndValidMove() {
+        assertEquals(rb.getPosVec(), b.getPiecePos(rb, v01));
+        assertEquals(null, b.getPiecePos(rb, v02));
+        assertEquals(null, b.getPiecePos(rw, v21));
+    }
+
+    @Test
+    public void testGetPiecePosAndValidMoveWithSetup() {
+        b.moveFoundPiece(v23, v22);
+        b.changeTurn();
+        b.moveFoundPiece(v13, v23);
+        assertEquals(null, b.getPiecePos(kw, v01));
+        assertEquals(null, b.getPiecePos(kw, v02));
+        assertEquals(null, b.getPiecePos(kw, v03));
+        assertEquals(null, b.getPiecePos(kw, v11));
+        assertEquals(null, b.getPiecePos(kw, v21));
+        assertEquals(null, b.getPiecePos(kw, v23));
+    }
+
+    @Test
+    public void testToString() {
+        String boardString = " -------------------\n";
+        boardString += "4| R_B | K_B | B_B |\n";
+        boardString += "3|     | P_B |     |\n";
+        boardString += "2|     | P_W |     |\n";
+        boardString += "1| B_W | K_W | R_W |\n";
+        boardString += "    a     b     c   \n";
+        boardString += "Black's captured pieces:\n";
+        boardString += "White's captured pieces:\n";
+        assertEquals(boardString, b.toString());
+
+        b.moveFoundPiece(v12, v11);
+        String newBoardString = " -------------------\n";
+        newBoardString += "4| R_B | K_B | B_B |\n";
+        newBoardString += "3|     | P_W |     |\n";
+        newBoardString += "2|     |     |     |\n";
+        newBoardString += "1| B_W | K_W | R_W |\n";
+        newBoardString += "    a     b     c   \n";
+        newBoardString += "Black's captured pieces:\n";
+        newBoardString += "White's captured pieces: P_W\n";
+        assertEquals(newBoardString, b.toString());
+    }
+
+    @Test
+    public void testCapturedPiecesAsString() {
+        assertEquals("White's captured pieces:\n",
+                b.capturedPiecesAsString(b.getCapturedPieces(), b.getTurn()));
+        b.addToCapturedPieces(pb);
+        b.addToCapturedPieces(rb);
+        assertEquals("White's captured pieces:\n",
+                b.capturedPiecesAsString(b.getCapturedPieces(), b.getTurn()));
+        assertEquals("Black's captured pieces: P_B R_B\n",
+                b.capturedPiecesAsString(b.getCapturedPieces(), b.notTurn()));
+    }
+
+    @Test
+    public void testMovesToString() {
+        assertEquals("", b.movesToString());
+        b.moveFoundPiece(v12, v11);
+        b.moveFoundPiece(v20, v11);
+        b.placePiece(pw, v12);
+        b.moveFoundPiece(v11, v20);
+        b.moveFoundPiece(v23, v22);
+        assertEquals("1. Pxb3 Bxb3 2. @Pb2 Bc4 3. Rc2 ", b.movesToString());
+    }
 }

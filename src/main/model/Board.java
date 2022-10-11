@@ -315,6 +315,7 @@ public class Board {
         for (int j = 0; j < boardPieces[y].length; j++) {
             if (piece.equals(boardPieces[y][j]) && boardPieces[y][j].validMove(movePos)) {
                 vec = new Vector(j, y);
+                count++;
             }
         }
         if (count == 1) {
