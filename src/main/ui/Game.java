@@ -32,8 +32,12 @@ public class Game {
             interpret(input);
             quitPlayingIfGameOver();
         }
-        if (board.isGameOver()) {
-            gameOverText();
+        if (board.getGameState() % 2 == 1) {
+            if (board.getGameState() == 1) {
+                kingCapturedText();
+            } else {
+                kingInEnemyLinesText();
+            }
             System.out.println("Moves made:");
             System.out.println(board.movesToString());
         }
@@ -42,17 +46,25 @@ public class Game {
     // MODIFIES: this
     // EFFECTS: makes the application stop once the game is over
     public void quitPlayingIfGameOver() {
-        if (board.isGameOver()) {
+        if (board.getGameState() % 2 == 1) {
             keepPlaying = false;
         }
     }
 
-    // EFFECTS: gives information about who won when the game ends
-    public void gameOverText() {
+    // EFFECTS: gives information about who won when the game ends by king capture
+    public void kingCapturedText() {
         System.out.println(board);
         System.out.print(capitalizeFirstOnly(board.notTurn().name()) + " has captured ");
         System.out.println(capitalizeFirstOnly(board.getTurn().name()) + "'s king.");
         System.out.println(capitalizeFirstOnly(board.notTurn().name()) + " wins!");
+    }
+
+    // EFFECTS: gives information about who won when the game ends by king staying in enemy lines for a turn
+    public void kingInEnemyLinesText() {
+        System.out.println(board);
+        System.out.print(capitalizeFirstOnly(board.getTurn().name()) + "'s king has stayed in enemy lines ");
+        System.out.println("for one turn.");
+        System.out.println(capitalizeFirstOnly(board.getTurn().name()) + " wins!");
     }
 
     // MODIFIES: this

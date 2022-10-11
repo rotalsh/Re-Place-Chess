@@ -12,8 +12,9 @@ import static ui.Game.capitalizeFirstOnly;
 public class Board {
     private Piece[][] boardPieces;
     private List<Piece> capturedPieces;
-    private boolean gameOver;
+    private int gameState;
     private Team turn;
+    private Team kingInEnemyLines;
     private List<String> movesMade;
 
     // EFFECTS: creates a new board at the start of the game, with pieces at their respective positions,
@@ -22,7 +23,7 @@ public class Board {
         rePlaceBoardStart();
         capturedPieces = new ArrayList<>();
         movesMade = new ArrayList<>();
-        gameOver = false;
+        gameState = 0;
         turn = Team.WHITE;
     }
 
@@ -63,11 +64,14 @@ public class Board {
     }
 
     // MODIFIES: this
-    // EFFECTS: ends the game if king is captured
+    // EFFECTS: ends the game if king is captured or king stays a turn in enemy lines
     public void endGame() {
         King king = new King(notTurn());
         if (capturedPieces.contains(king)) {
-            gameOver = true;
+            gameState = 1;
+        } else if (gameState == 2 && turn.equals(kingInEnemyLines)) {
+            gameState = 3;
+            movesMade.add("#");
         }
     }
 
@@ -138,6 +142,33 @@ public class Board {
         boardPieces[y][x] = new Queen(x, y, piece.getTeam());
     }
 
+    // MODIFIES: this
+    // EFFECTS: checks if king is in enemy lines, if so change state of game
+    public void checkKingInEnemyLines() {
+        for (int j = 0; j < boardPieces[0].length; j++) {
+            Piece piece = boardPieces[0][j];
+            if ((piece instanceof King) && piece.getTeam().equals(Team.WHITE)) {
+                kingIsInEnemyLines(Team.WHITE);
+            }
+        }
+        int lastRow = boardPieces.length - 1;
+        for (int j = 0; j < boardPieces[lastRow].length; j++) {
+            Piece piece = boardPieces[lastRow][j];
+            if ((piece instanceof King) && piece.getTeam().equals(Team.BLACK)) {
+                kingIsInEnemyLines(Team.BLACK);
+            }
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: sets the team that can win from king staying in enemy lines to given unless already given
+    public void kingIsInEnemyLines(Team team) {
+        if (gameState != 2) {
+            gameState = 2;
+            kingInEnemyLines = team;
+        }
+    }
+
     // REQUIRES: piecePos and movePos are positions on the board
     // MODIFIES: this
     // EFFECTS: places piece at piecePos on movePos if possible, and if so, capture piece at movePos if there,
@@ -157,6 +188,7 @@ public class Board {
             }
             changeTurn();
             checkPromotion();
+            checkKingInEnemyLines();
             endGame();
             return true;
         } else {
@@ -198,7 +230,9 @@ public class Board {
     // REQUIRES: currPiece is not null, movePos is not null
     // EFFECTS: returns the string "=Q" if the piece is a pawn and the move promotes the pawn
     public String determinePromotion(Piece currPiece, Vector movePos) {
-        if (currPiece.getTeam().equals(Team.WHITE) && movePos.getYcomp() == 0) {
+        if (!(currPiece instanceof  Pawn)) {
+            return "";
+        } else if (currPiece.getTeam().equals(Team.WHITE) && movePos.getYcomp() == 0) {
             return "=Q";
         } else if (currPiece.getTeam().equals(Team.BLACK) && movePos.getYcomp() == getBoardHeight() - 1) {
             return "=Q";
@@ -255,8 +289,8 @@ public class Board {
     public boolean canGetToSameColumn(Piece currPiece, Vector movePos) {
         int column = currPiece.getPosX();
         int count = 0;
-        for (int i = 0; i < boardPieces.length; i++) {
-            if (currPiece.equals(boardPieces[i][column]) && boardPieces[i][column].validMove(movePos)) {
+        for (Piece[] boardPiece : boardPieces) {
+            if (currPiece.equals(boardPiece[column]) && boardPiece[column].validMove(movePos)) {
                 count++;
             }
         }
@@ -265,9 +299,9 @@ public class Board {
 
     public boolean canGetToNotSameRowOrColumn(Piece currPiece, Vector movePos) {
         int count = 0;
-        for (int i = 0; i < boardPieces.length; i++) {
-            for (int j = 0; j < boardPieces[i].length; j++) {
-                if (currPiece.equals(boardPieces[i][j]) && boardPieces[i][j].validMove(movePos)) {
+        for (Piece[] boardPiece : boardPieces) {
+            for (Piece piece : boardPiece) {
+                if (currPiece.equals(piece) && piece.validMove(movePos)) {
                     count++;
                 }
             }
@@ -348,33 +382,33 @@ public class Board {
     //          as well as the pieces in each player's captured pieces
     @Override
     public String toString() {
-        String boardString = " -------------------\n";
+        StringBuilder boardString = new StringBuilder(" -------------------\n");
         for (int i = 0; i < boardPieces.length; i++) {
-            boardString += boardPieces.length - i;
+            boardString.append(boardPieces.length - i);
             for (int j = 0; j < boardPieces[i].length; j++) {
-                boardString += "| ";
+                boardString.append("| ");
                 if (boardPieces[i][j] == null) {
-                    boardString += "   ";
+                    boardString.append("   ");
                 } else {
-                    boardString += boardPieces[i][j].toString();
+                    boardString.append(boardPieces[i][j].toString());
                 }
-                boardString += " ";
+                boardString.append(" ");
             }
-            boardString += "|\n";
+            boardString.append("|\n");
         }
-        boardString += "    a     b     c   \n";
-        boardString += capturedPiecesAsString(capturedPieces, Team.BLACK);
-        boardString += capturedPiecesAsString(capturedPieces, Team.WHITE);
+        boardString.append("    a     b     c   \n");
+        boardString.append(capturedPiecesAsString(capturedPieces, Team.BLACK));
+        boardString.append(capturedPiecesAsString(capturedPieces, Team.WHITE));
 
-        return boardString;
+        return boardString.toString();
     }
 
     // EFFECTS: returns the string format of captured pieces of given team
     public String capturedPiecesAsString(List<Piece> pieces, Team team) {
-        String piecesString = capitalizeFirstOnly(team.name()) + "'s captured pieces:";
+        StringBuilder piecesString = new StringBuilder(capitalizeFirstOnly(team.name()) + "'s captured pieces:");
         for (Piece piece : pieces) {
             if (piece.getTeam().equals(team)) {
-                piecesString += " " + piece.toString();
+                piecesString.append(" ").append(piece);
             }
         }
         return piecesString + "\n";
@@ -383,14 +417,14 @@ public class Board {
     // EFFECTS: returns the list of moves made in string formatted like this:
     //          1. Pxb3 Bxb3 2. @Pb2 Bc4 3. Rc2
     public String movesToString() {
-        String string = "";
+        StringBuilder string = new StringBuilder();
         for (int i = 0; i < movesMade.size(); i++) {
             if (i % 2 == 0) {
-                string += (i / 2 + 1) + ". ";
+                string.append(i / 2 + 1).append(". ");
             }
-            string += movesMade.get(i) + " ";
+            string.append(movesMade.get(i)).append(" ");
         }
-        return string; // stub
+        return string.toString(); // stub
     }
 
     // GETTERS
@@ -425,8 +459,8 @@ public class Board {
     }
 
     // EFFECTS: returns true if game is over
-    public boolean isGameOver() {
-        return gameOver;
+    public int getGameState() {
+        return gameState;
     }
 
     // EFFECTS: returns the height of the board
@@ -437,5 +471,10 @@ public class Board {
     // EFFECTS: returns the width of the board
     public int getBoardWidth() {
         return boardPieces[0].length;
+    }
+
+    // EFFECTS: returns the team of the king first in enemy lines
+    public Team getKingInEnemyLines() {
+        return kingInEnemyLines;
     }
 }

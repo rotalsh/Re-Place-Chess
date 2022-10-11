@@ -125,7 +125,7 @@ public abstract class Piece {
     // EFFECTS: returns the piece in string format, as PieceLetter_TeamLetter
     @Override
     public String toString() {
-        String teamLetter = "";
+        String teamLetter;
         if (team.equals(Team.WHITE)) {
             teamLetter = "W";
         } else {

@@ -1,7 +1,5 @@
 package model;
 
-import model.piece.Bishop;
-
 import static java.lang.Math.abs;
 
 // A two-dimensional vector with an x-component and a y-component

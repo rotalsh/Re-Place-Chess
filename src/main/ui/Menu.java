@@ -28,16 +28,21 @@ public class Menu {
     // MODIFIES: this
     // EFFECTS: interprets user input
     public void menuInterpret(String input) {
-        if (input.equals("q")) {
-            keepGoing = false;
-        } else if (input.equals("n")) {
-            keepGoing = false;
-            new Game();
-        } else if (input.equals("r")) {
-            printRules();
-            printHowToPlay();
-        } else {
-            System.out.println("That is not a recognized command.");
+        switch (input) {
+            case "q":
+                keepGoing = false;
+                break;
+            case "n":
+                keepGoing = false;
+                new Game();
+                break;
+            case "r":
+                printRules();
+                printHowToPlay();
+                break;
+            default:
+                System.out.println("That is not a recognized command.");
+                break;
         }
     }
 
@@ -57,13 +62,14 @@ public class Menu {
         System.out.println("already placed pieces or at the very last row of the board relative to the player.");
         System.out.println("Captured queens cannot be placed as queens as must be placed as pawns.");
         System.out.println("Players must make a move each turn - a player cannot skip their turn.");
-        System.out.println("A player wins if they capture their opponent's king.");
+        System.out.print("A player wins if they capture their opponent's king, or if their king is able to stay");
+        System.out.println(" a turn on the enemy's back row without getting captured.");
     }
 
     // EFFECTS: prints out how to play the game / how to input moves to terminal
     public void printHowToPlay() {
         System.out.println("\nTo make a move, type your move into the terminal when it's your turn in this format:");
-        System.out.println("PieceLetter(extraDeterminer)placeToMoveTo.");
+        System.out.println("PieceLetter(extraDeterminer)PlaceToMoveTo.");
         System.out.println("So, for example, if I wanted to move my pawn to the space b3, I would type Pb3.");
         System.out.println("The extraDeterminer is required if a player is in possession of more than one piece");
         System.out.println("of the same type that can move to the same space.");
@@ -72,7 +78,7 @@ public class Menu {
         System.out.print("Similarly, if I have two rooks, one on b1 and one on b3, and i wanted to move the one on");
         System.out.println("b1 to b2, I would have to type R1b2.");
         System.out.println("To place a piece down, use the format:");
-        System.out.println("@PieceLetterplaceToMoveTo.");
+        System.out.println("@PieceLetterPlaceToMoveTo.");
         System.out.println("So, if I wanted to place a pawn down at a2, I would type @Pa2.\n");
     }
 }

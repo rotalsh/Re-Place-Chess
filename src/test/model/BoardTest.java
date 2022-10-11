@@ -68,7 +68,8 @@ public class BoardTest {
         assertEquals(0, b.getCapturedPieces().size());
         assertEquals(Team.WHITE, b.getTurn());
         assertEquals(Team.BLACK, b.notTurn());
-        assertFalse(b.isGameOver());
+        assertEquals(0, b.getGameState());
+        assertNull(b.getKingInEnemyLines());
     }
 
     @Test
@@ -111,15 +112,46 @@ public class BoardTest {
     @Test
     public void testEndGameNotEndThenEnd() {
         b.endGame();
-        assertFalse(b.isGameOver());
+        assertEquals(0, b.getGameState());
 
         b.addToCapturedPieces(kw);
         b.endGame();
-        assertFalse(b.isGameOver());
+        assertEquals(0, b.getGameState());
 
         b.addToCapturedPieces(kb);
         b.endGame();
-        assertTrue(b.isGameOver());
+        assertEquals(1, b.getGameState());
+        assertFalse(b.getMovesMade().contains("#"));
+    }
+
+    @Test
+    public void testEndGameFromKingInEnemyLines() {
+        b.moveFoundPiece(v13, v22);
+        b.moveFoundPiece(v10, v01);
+        b.moveFoundPiece(v22, v21);
+        b.changeTurn();
+        b.moveFoundPiece(v21, v10);
+        b.endGame();
+        assertEquals(2, b.getGameState());
+        b.changeTurn();
+        b.endGame();
+        assertEquals(3, b.getGameState());
+        assertTrue(b.getMovesMade().contains("#"));
+    }
+
+    @Test
+    public void testEndGameKingInEnemyLinesButCapture() {
+        b.moveFoundPiece(v13, v22);
+        b.moveFoundPiece(v10, v01);
+        b.moveFoundPiece(v22, v21);
+        b.changeTurn();
+        b.moveFoundPiece(v21, v10);
+        b.endGame();
+        assertEquals(2, b.getGameState());
+        b.moveFoundPiece(v00, v10);
+        b.endGame();
+        assertEquals(1, b.getGameState());
+        assertFalse(b.getMovesMade().contains("#"));
     }
 
     @Test
@@ -215,6 +247,52 @@ public class BoardTest {
     }
 
     @Test
+    public void testCheckKingInEnemyLinesNoKing() {
+        b.checkKingInEnemyLines();
+        assertEquals(0, b.getGameState());
+        assertNull(b.getKingInEnemyLines());
+        b.moveFoundPiece(v13, v22);
+        assertEquals(0, b.getGameState());
+        assertNull(b.getKingInEnemyLines());
+    }
+
+    @Test
+    public void testCheckKingInEnemyLinesWhiteKing() {
+        b.moveFoundPiece(v13, v22);
+        b.moveFoundPiece(v10, v01);
+        b.moveFoundPiece(v22, v21);
+        b.changeTurn();
+        b.moveFoundPiece(v21, v10);
+        assertEquals(2, b.getGameState());
+        assertEquals(Team.WHITE, b.getKingInEnemyLines());
+    }
+
+    @Test
+    public void testCheckKingInEnemyLinesBlackKing() {
+        b.moveFoundPiece(v13, v22);
+        b.moveFoundPiece(v10, v01);
+        b.changeTurn();
+        b.moveFoundPiece(v01, v02);
+        b.changeTurn();
+        b.moveFoundPiece(v02, v13);
+        assertEquals(2, b.getGameState());
+        assertEquals(Team.BLACK, b.getKingInEnemyLines());
+    }
+
+    @Test
+    public void testCheckKingInEnemyLinesTwoKings() {
+        b.moveFoundPiece(v13, v22);
+        b.moveFoundPiece(v10, v01);
+        b.moveFoundPiece(v22, v21);
+        b.moveFoundPiece(v01, v02);
+        b.moveFoundPiece(v21, v10);
+        assertEquals(2, b.getGameState());
+        b.moveFoundPiece(v02, v13);
+        assertEquals(3, b.getGameState());
+        assertEquals(Team.WHITE, b.getKingInEnemyLines());
+    }
+
+    @Test
     public void testMoveFoundPieceFalse() {
         assertEquals(rw, b.getBoardPieces()[3][2]);
         assertEquals(kw, b.getBoardPieces()[3][1]);
@@ -264,7 +342,7 @@ public class BoardTest {
 
         assertTrue(b.moveFoundPiece(v00, v01));
         assertEquals(Team.WHITE, b.getTurn());
-        assertEquals(null, b.getBoardPieces()[0][0]);
+        assertNull(b.getBoardPieces()[0][0]);
         assertEquals(rb, b.getBoardPieces()[1][0]);
         assertTrue(b.getCapturedPieces().isEmpty());
     }
@@ -277,16 +355,16 @@ public class BoardTest {
 
         assertTrue(b.moveFoundPiece(v12, v11));
         assertEquals(Team.BLACK, b.getTurn());
-        assertEquals(null, b.getBoardPieces()[2][1]);
+        assertNull(b.getBoardPieces()[2][1]);
         assertEquals(pw, b.getBoardPieces()[1][1]);
         assertTrue(b.getCapturedPieces().contains(pw));
         assertEquals(1, b.getCapturedPieces().size());
 
         assertEquals(rb, b.getBoardPieces()[0][0]);
-        assertEquals(null, b.getBoardPieces()[1][0]);
+        assertNull(b.getBoardPieces()[1][0]);
         assertTrue(b.moveFoundPiece(v00, v01));
         assertEquals(Team.WHITE, b.getTurn());
-        assertEquals(null, b.getBoardPieces()[0][0]);
+        assertNull(b.getBoardPieces()[0][0]);
         assertEquals(rb, b.getBoardPieces()[1][0]);
         assertTrue(b.getCapturedPieces().contains(pw));
         assertEquals(1, b.getCapturedPieces().size());
@@ -296,10 +374,10 @@ public class BoardTest {
     public void testMoveFoundPieceNoCaptureThenCapture() {
         assertEquals(rw, b.getBoardPieces()[3][2]);
         assertEquals(Team.WHITE, b.getTurn());
-        assertEquals(null, b.getBoardPieces()[2][2]);
+        assertNull(b.getBoardPieces()[2][2]);
 
         assertTrue(b.moveFoundPiece(v23, v22));
-        assertEquals(null, b.getBoardPieces()[3][2]);
+        assertNull(b.getBoardPieces()[3][2]);
         assertEquals(rw, b.getBoardPieces()[2][2]);
         assertTrue(b.getCapturedPieces().isEmpty());
         assertEquals(Team.BLACK, b.getTurn());
@@ -308,7 +386,7 @@ public class BoardTest {
         assertEquals(pb, b.getBoardPieces()[1][1]);
         assertTrue(b.moveFoundPiece(v11, v12));
         assertEquals(pb, b.getBoardPieces()[2][1]);
-        assertEquals(null, b.getBoardPieces()[1][1]);
+        assertNull(b.getBoardPieces()[1][1]);
         assertTrue(b.getCapturedPieces().contains(pb));
         assertEquals(1, b.getCapturedPieces().size());
         assertEquals(Team.WHITE, b.getTurn());
@@ -321,7 +399,7 @@ public class BoardTest {
         assertEquals(Team.WHITE, b.getTurn());
 
         assertTrue(b.moveFoundPiece(v12, v11));
-        assertEquals(null, b.getBoardPieces()[2][1]);
+        assertNull(b.getBoardPieces()[2][1]);
         assertEquals(pw, b.getBoardPieces()[1][1]);
         assertTrue(b.getCapturedPieces().contains(pw));
         assertEquals(1, b.getCapturedPieces().size());
@@ -534,8 +612,8 @@ public class BoardTest {
 
     @Test
     public void testGetPiecePosNoSetup() {
-        assertEquals(null, b.getPiecePos(qw, v11));
-        assertEquals(rw.getPosVec(), b.getPiecePos(rw2, v22));;
+        assertNull(b.getPiecePos(qw, v11));
+        assertEquals(rw.getPosVec(), b.getPiecePos(rw2, v22));
     }
 
     @Test
@@ -549,7 +627,7 @@ public class BoardTest {
         b.changeTurn();
         b.addToCapturedPieces(rw2);
         b.placePiece(rw2, v03);
-        assertEquals(null, b.getPiecePos(rw, v13));
+        assertNull(b.getPiecePos(rw, v13));
     }
 
     @Test
@@ -557,19 +635,19 @@ public class BoardTest {
         assertFalse(b.canGetToSameColumn(rw, v22));
         b.addToCapturedPieces(rw2);
         b.placePiece(rw2, v21);
-        assertEquals(null, b.getPiecePos(rw, v22));
+        assertNull(b.getPiecePos(rw, v22));
     }
 
     @Test
     public void testGetPiecePosInvalidMove() {
-        assertEquals(null, b.getPiecePos(rw, v11));
-        assertEquals(null, b.getPiecePos(rw2, v23));;
+        assertNull(b.getPiecePos(rw, v11));
+        assertNull(b.getPiecePos(rw2, v23));
     }
 
     @Test
     public void testGetPieceFromColumnPosNoSetup() {
-        assertEquals(null, b.getPiecePosFromColumn(qw, v11, 2));
-        assertEquals(rw.getPosVec(), b.getPiecePosFromColumn(rw2, v22, 2));;
+        assertNull(b.getPiecePosFromColumn(qw, v11, 2));
+        assertEquals(rw.getPosVec(), b.getPiecePosFromColumn(rw2, v22, 2));
     }
 
     @Test
@@ -584,7 +662,7 @@ public class BoardTest {
         b.addToCapturedPieces(rw2);
         b.placePiece(rw2, v03);
         assertEquals(rw.getPosVec(), b.getPiecePosFromColumn(rw, v13, 2));
-        assertEquals(null, b.getPiecePosFromColumn(rw, v13, 1));
+        assertNull(b.getPiecePosFromColumn(rw, v13, 1));
         assertEquals(rw2.getPosVec(), b.getPiecePosFromColumn(rw, v13, 0));
     }
 
@@ -593,21 +671,21 @@ public class BoardTest {
         assertFalse(b.canGetToSameColumn(rw, v22));
         b.addToCapturedPieces(rw2);
         b.placePiece(rw2, v21);
-        assertEquals(null, b.getPiecePosFromColumn(rw, v22, 2));
-        assertEquals(null, b.getPiecePosFromColumn(rw, v22, 0));
+        assertNull(b.getPiecePosFromColumn(rw, v22, 2));
+        assertNull(b.getPiecePosFromColumn(rw, v22, 0));
 
     }
 
     @Test
     public void testGetPiecePosFromColumnInvalidMove() {
-        assertEquals(null, b.getPiecePosFromColumn(rw, v11, 0));
-        assertEquals(null, b.getPiecePosFromColumn(rw2, v23, 2));
+        assertNull(b.getPiecePosFromColumn(rw, v11, 0));
+        assertNull(b.getPiecePosFromColumn(rw2, v23, 2));
     }
 
     @Test
     public void testGetPieceFromRowPosNoSetup() {
-        assertEquals(null, b.getPiecePosFromRow(qw, v11, 2));
-        assertEquals(rw.getPosVec(), b.getPiecePosFromRow(rw2, v22, 3));;
+        assertNull(b.getPiecePosFromRow(qw, v11, 2));
+        assertEquals(rw.getPosVec(), b.getPiecePosFromRow(rw2, v22, 3));
     }
 
     @Test
@@ -621,8 +699,8 @@ public class BoardTest {
         b.changeTurn();
         b.addToCapturedPieces(rw2);
         b.placePiece(rw2, v03);
-        assertEquals(null, b.getPiecePosFromRow(rw, v13, 2));
-        assertEquals(null, b.getPiecePosFromRow(rw, v13, 3));
+        assertNull(b.getPiecePosFromRow(rw, v13, 2));
+        assertNull(b.getPiecePosFromRow(rw, v13, 3));
     }
 
     @Test
@@ -631,22 +709,22 @@ public class BoardTest {
         b.addToCapturedPieces(rw2);
         b.placePiece(rw2, v21);
         assertEquals(rw.getPosVec(), b.getPiecePosFromRow(rw, v22, 3));
-        assertEquals(null, b.getPiecePosFromRow(rw, v22, 2));
+        assertNull(b.getPiecePosFromRow(rw, v22, 2));
         assertEquals(rw2.getPosVec(), b.getPiecePosFromRow(rw, v22, 1));
 
     }
 
     @Test
     public void testGetPiecePosFromRowInvalidMove() {
-        assertEquals(null, b.getPiecePosFromRow(rw, v11, 2));
-        assertEquals(null, b.getPiecePosFromRow(rw2, v23, 3));
+        assertNull(b.getPiecePosFromRow(rw, v11, 2));
+        assertNull(b.getPiecePosFromRow(rw2, v23, 3));
     }
 
     @Test
     public void testGetPiecePosAndValidMove() {
         assertEquals(rb.getPosVec(), b.getPiecePos(rb, v01));
-        assertEquals(null, b.getPiecePos(rb, v02));
-        assertEquals(null, b.getPiecePos(rw, v21));
+        assertNull(b.getPiecePos(rb, v02));
+        assertNull(b.getPiecePos(rw, v21));
     }
 
     @Test
@@ -654,12 +732,12 @@ public class BoardTest {
         b.moveFoundPiece(v23, v22);
         b.changeTurn();
         b.moveFoundPiece(v13, v23);
-        assertEquals(null, b.getPiecePos(kw, v01));
-        assertEquals(null, b.getPiecePos(kw, v02));
-        assertEquals(null, b.getPiecePos(kw, v03));
-        assertEquals(null, b.getPiecePos(kw, v11));
-        assertEquals(null, b.getPiecePos(kw, v21));
-        assertEquals(null, b.getPiecePos(kw, v23));
+        assertNull(b.getPiecePos(kw, v01));
+        assertNull(b.getPiecePos(kw, v02));
+        assertNull(b.getPiecePos(kw, v03));
+        assertNull(b.getPiecePos(kw, v11));
+        assertNull(b.getPiecePos(kw, v21));
+        assertNull(b.getPiecePos(kw, v23));
     }
 
     @Test
