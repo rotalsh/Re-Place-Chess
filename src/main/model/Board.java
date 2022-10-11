@@ -180,9 +180,9 @@ public class Board {
     public void addMove(Piece currPiece, Piece pieceAtMovePos, Vector movePos) {
         String pieceLetter = currPiece.getLetter();
         String extraLetter = "";
-        if (sameRow(currPiece)) {
+        if (sameRow(currPiece, movePos)) {
             extraLetter = posXToString(currPiece.getPosX());
-        } else if (sameColumn(currPiece)) {
+        } else if (sameColumn(currPiece, movePos)) {
             extraLetter = posYToString(currPiece.getPosY());
         }
         String captureString = determineString(pieceAtMovePos);
@@ -233,13 +233,14 @@ public class Board {
         return String.valueOf((char) (48 + getBoardHeight() - y));
     }
 
-    // REQUIRES: currPiece is not null
-    // EFFECTS: returns true if there is more than one piece of the same type and team in the row, false otherwise
-    public boolean sameRow(Piece currPiece) {
+    // REQUIRES: currPiece is not null, movePos is a position on the board that currPiece can get to
+    // EFFECTS: returns true if there is more than one piece of the same type and team in the row
+    //          that can move to movePos, false otherwise
+    public boolean sameRow(Piece currPiece, Vector movePos) {
         int row = currPiece.getPosY();
         int count = 0;
         for (int j = 0; j < boardPieces[row].length; j++) {
-            if (currPiece.equals(boardPieces[row][j])) {
+            if (currPiece.equals(boardPieces[row][j]) && boardPieces[row][j].validMove(movePos)) {
                 count++;
             }
         }
@@ -247,12 +248,13 @@ public class Board {
     }
 
     // REQUIRES: currPiece is not null
-    // EFFECTS: returns true if there is more than one piece of the same type and team in the column, false otherwise
-    public boolean sameColumn(Piece currPiece) {
+    // EFFECTS: returns true if there is more than one piece of the same type and team in the column
+    //          that can move to movePos, false otherwise
+    public boolean sameColumn(Piece currPiece, Vector movePos) {
         int column = currPiece.getPosX();
         int count = 0;
         for (int i = 0; i < boardPieces.length; i++) {
-            if (currPiece.equals(boardPieces[i][column])) {
+            if (currPiece.equals(boardPieces[i][column]) && boardPieces[i][column].validMove(movePos)) {
                 count++;
             }
         }

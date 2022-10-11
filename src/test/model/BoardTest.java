@@ -385,6 +385,13 @@ public class BoardTest {
         b.addMove(rw, null, v13);
         assertEquals(5, b.getMovesMade().size());
         assertEquals("Rcb1", b.getMovesMade().get(4));
+
+        b.moveFoundPiece(v03, v13);
+        assertEquals(6, b.getMovesMade().size());
+
+        b.addMove(rw, null, v03);
+        assertEquals(7, b.getMovesMade().size());
+        assertEquals("Ra1", b.getMovesMade().get(6));
     }
 
     @Test
@@ -469,7 +476,7 @@ public class BoardTest {
 
     @Test
     public void testSameRow() {
-        assertFalse(b.sameRow(rw));
+        assertFalse(b.sameRow(rw, v13));
         b.moveFoundPiece(v13, v22);
         b.changeTurn();
         b.moveFoundPiece(v12, v11);
@@ -478,15 +485,21 @@ public class BoardTest {
         b.changeTurn();
         b.addToCapturedPieces(rw2);
         b.placePiece(rw2, v03);
-        assertTrue(b.sameRow(rw));
+        assertTrue(b.sameRow(rw, v13));
+        b.changeTurn();
+        b.moveFoundPiece(v03, v13);
+        assertFalse(b.sameRow(rw, v03));
     }
 
     @Test
     public void testSameColumn() {
-        assertFalse(b.sameColumn(rw));
+        assertFalse(b.sameColumn(rw, v22));
         b.addToCapturedPieces(rw2);
         b.placePiece(rw2, v21);
-        assertTrue(b.sameColumn(rw2));
+        assertTrue(b.sameColumn(rw2, v22));
+        b.changeTurn();
+        b.moveFoundPiece(v21, v22);
+        assertFalse(b.sameColumn(rw2, v21));
     }
 
     @Test
@@ -503,7 +516,7 @@ public class BoardTest {
 
     @Test
     public void testGetPiecePosSameRow() {
-        assertFalse(b.sameRow(rw));
+        assertFalse(b.sameRow(rw, v13));
         b.moveFoundPiece(v13, v22);
         b.changeTurn();
         b.moveFoundPiece(v12, v11);
@@ -517,7 +530,7 @@ public class BoardTest {
 
     @Test
     public void testGetPiecePosSameColumn() {
-        assertFalse(b.sameColumn(rw));
+        assertFalse(b.sameColumn(rw, v22));
         b.addToCapturedPieces(rw2);
         b.placePiece(rw2, v21);
         assertEquals(null, b.getPiecePos(rw, v22));
@@ -537,7 +550,7 @@ public class BoardTest {
 
     @Test
     public void testGetPieceFromColumnPosSameRow() {
-        assertFalse(b.sameRow(rw));
+        assertFalse(b.sameRow(rw, v13));
         b.moveFoundPiece(v13, v22);
         b.changeTurn();
         b.moveFoundPiece(v12, v11);
@@ -553,7 +566,7 @@ public class BoardTest {
 
     @Test
     public void testGetPiecePosFromColumnSameColumn() {
-        assertFalse(b.sameColumn(rw));
+        assertFalse(b.sameColumn(rw, v22));
         b.addToCapturedPieces(rw2);
         b.placePiece(rw2, v21);
         assertEquals(null, b.getPiecePosFromColumn(rw, v22, 2));
@@ -575,7 +588,7 @@ public class BoardTest {
 
     @Test
     public void testGetPieceFromRowPosSameRow() {
-        assertFalse(b.sameRow(rw));
+        assertFalse(b.sameRow(rw, v13));
         b.moveFoundPiece(v13, v22);
         b.changeTurn();
         b.moveFoundPiece(v12, v11);
@@ -590,7 +603,7 @@ public class BoardTest {
 
     @Test
     public void testGetPiecePosFromRowSameColumn() {
-        assertFalse(b.sameColumn(rw));
+        assertFalse(b.sameColumn(rw, v22));
         b.addToCapturedPieces(rw2);
         b.placePiece(rw2, v21);
         assertEquals(rw.getPosVec(), b.getPiecePosFromRow(rw, v22, 3));

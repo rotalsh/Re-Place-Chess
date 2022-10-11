@@ -40,12 +40,16 @@ games.
 ## User Stories
 
 In the context of this game:
-- As a user, I want to be able to make a move and add it 
+- As a user, I want to be able to make a move which 
+changes the state of the board and add it 
 to a list of moves that have been made so far
 - As a user, I want to be able to see all the moves that 
 have been made so far printed out in some format
 - As a user, I want to be able to start a new game 
-- As a user, I want to be able to make moves along with
-the other player that would allow me to capture their king (win 
-the game)
+- As a user, I want to be able to make moves/play against
+another player where one of us would come out victorious 
+after capturing
+the other's king
+- As a user, I want to be able to spend a turn to re-place 
+pieces that I've captured, so that I can control them again
  
