@@ -180,10 +180,12 @@ public class Board {
     public void addMove(Piece currPiece, Piece pieceAtMovePos, Vector movePos) {
         String pieceLetter = currPiece.getLetter();
         String extraLetter = "";
-        if (sameRow(currPiece, movePos)) {
+        if (canGetToSameRow(currPiece, movePos)) {
             extraLetter = posXToString(currPiece.getPosX());
-        } else if (sameColumn(currPiece, movePos)) {
+        } else if (canGetToSameColumn(currPiece, movePos)) {
             extraLetter = posYToString(currPiece.getPosY());
+        } else if (canGetToNotSameRowOrColumn(currPiece, movePos)) {
+            extraLetter = posXToString(currPiece.getPosX());
         }
         String captureString = determineString(pieceAtMovePos);
         String captureKing = determineIfCaptureKing(pieceAtMovePos);
@@ -236,7 +238,7 @@ public class Board {
     // REQUIRES: currPiece is not null, movePos is a position on the board that currPiece can get to
     // EFFECTS: returns true if there is more than one piece of the same type and team in the row
     //          that can move to movePos, false otherwise
-    public boolean sameRow(Piece currPiece, Vector movePos) {
+    public boolean canGetToSameRow(Piece currPiece, Vector movePos) {
         int row = currPiece.getPosY();
         int count = 0;
         for (int j = 0; j < boardPieces[row].length; j++) {
@@ -244,13 +246,13 @@ public class Board {
                 count++;
             }
         }
-        return (count > 1);
+        return count > 1;
     }
 
     // REQUIRES: currPiece is not null
     // EFFECTS: returns true if there is more than one piece of the same type and team in the column
     //          that can move to movePos, false otherwise
-    public boolean sameColumn(Piece currPiece, Vector movePos) {
+    public boolean canGetToSameColumn(Piece currPiece, Vector movePos) {
         int column = currPiece.getPosX();
         int count = 0;
         for (int i = 0; i < boardPieces.length; i++) {
@@ -258,7 +260,19 @@ public class Board {
                 count++;
             }
         }
-        return (count > 1);
+        return count > 1;
+    }
+
+    public boolean canGetToNotSameRowOrColumn(Piece currPiece, Vector movePos) {
+        int count = 0;
+        for (int i = 0; i < boardPieces.length; i++) {
+            for (int j = 0; j < boardPieces[i].length; j++) {
+                if (currPiece.equals(boardPieces[i][j]) && boardPieces[i][j].validMove(movePos)) {
+                    count++;
+                }
+            }
+        }
+        return count > 1;
     }
 
     // EFFECTS: returns "x" if there is a piece to be taken at pieceAtMovePos, "" if not
