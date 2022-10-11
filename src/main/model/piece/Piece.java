@@ -6,6 +6,8 @@ import model.Team;
 import java.util.ArrayList;
 import java.util.List;
 
+// An abstract representation of a piece, with an X and Y position, a team,
+//  and the direction and magnitude of the moves it can make
 public abstract class Piece {
 
     protected int posX;
@@ -27,61 +29,91 @@ public abstract class Piece {
         moves = new ArrayList<>();
     }
 
-    // MODIFIES: this
-    // EFFECTS: moves the piece's x by dx and y by dy
-    public void move(int dx, int dy) {
-        posX += dx;
-        posY += dy;
+
+    // REQUIRES: movePos is not null
+    // EFFECTS: returns true if moving to movePos is a valid move for the piece
+    public boolean validMove(Vector movePos) {
+        Vector oldMoveVec = getPosVec().subVector(movePos);
+        for (Vector move : moves) {
+            Vector myMove = new Vector(move.getXcomp(), move.getYcomp());
+            if (team == Team.BLACK) {
+                myMove.reverseDirection();
+            }
+            int count = 0;
+            while (true) {
+                Vector newMoveVec = myMove.subVector(oldMoveVec);
+                count++;
+                if (newMoveVec.isZero() && count <= magnitude) {
+                    return true;
+                } else if (count > magnitude) {
+                    break;
+                } else if (!newMoveVec.isStrictlySmaller(oldMoveVec) || newMoveVec.hasSwitchedDirections(oldMoveVec)) {
+                    break;
+                }
+                oldMoveVec = newMoveVec;
+            }
+        }
+        return false;
     }
 
-    // MODIFIES: this
-    // EFFECTS: moves the piece's x and y to the given vector
-    public void move(Vector vec) {
-        posX = vec.getXcomp();
-        posY = vec.getYcomp();
+    // EFFECTS: returns true if this piece can take otherPiece
+    public boolean canTake(Piece otherPiece) {
+        if (otherPiece == null) {
+            return true;
+        } else if (this.team != otherPiece.getTeam()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // GETTERS
 
+    // EFFECTS: returns the letter associated with the piece
+    public abstract String getLetter();
+
+    // EFFECTS: returns the position of the piece as a vector
     public Vector getPosVec() {
         return new Vector(posX, posY);
     }
 
+    // EFFECTS: returns the team of the piece
     public Team getTeam() {
         return team;
     }
 
+    // EFFECTS: returns the X position of the piece
     public int getPosX() {
         return posX;
     }
 
+    // EFFECTS: returns the Y position of the piece
     public int getPosY() {
         return posY;
     }
 
-    // SETTERS
-
-
-    // MODIFIES: this
-    // EFFECTS: places piece at given position
-    public void placePiece(int x, int y) {
-        posX = x;
-        posY = y;
+    // EFFECTS: returns the moves of the piece
+    public List<Vector> getMoves() {
+        return moves;
     }
 
+    // EFFECT: returns the magnitude of the piece
+    public int getMagnitude() {
+        return magnitude;
+    }
+
+    // SETTERS
+
+    // REQUIRES: vec is not null
     // MODIFIES: this
-    // EFFECTS: places piece at given position according to vector sets state of piece to not captured
+    // EFFECTS: places piece at given position vector
     public void placePiece(Vector vec) {
         posX = vec.getXcomp();
         posY = vec.getYcomp();
     }
 
     // MODIFIES: this
-    // EFFECTS: sets team of piece to given team
-    public void setTeam(Team team) {
-        this.team = team;
-    }
-
+    // EFFECTS: sets the team of piece from white to black and vice versa
     public void setOppositeTeam() {
         switch (team) {
             case WHITE:
@@ -93,41 +125,18 @@ public abstract class Piece {
         }
     }
 
-    // TODO specifications
-    public boolean validMove(Vector movePos) {
-        Vector oldMoveVec = getPosVec().subVector(movePos);
-        for (Vector move : moves) {
-            if (team == Team.BLACK) {
-                move.flipDirection();
-            }
-            int count = 0;
-            while (true) {
-                Vector newMoveVec = move.subVector(oldMoveVec);
-                count++;
-                if (newMoveVec.isZero() && count <= magnitude) {
-                    return true;
-                } else if (count > magnitude) {
-                    break;
-                } else if (!newMoveVec.isStrictlySmaller(oldMoveVec)
-                        || !newMoveVec.hasSwitchedDirections(oldMoveVec)) {
-                    break;
-                }
-                oldMoveVec = newMoveVec;
-            }
+    // EFFECTS: returns the piece in string format, as PieceLetter_TeamLetter
+    @Override
+    public String toString() {
+        String teamLetter = "";
+        switch (team) {
+            case WHITE:
+                teamLetter = "W";
+                break;
+            case BLACK:
+                teamLetter = "B";
+                break;
         }
-        return false;
+        return getLetter() + "_" + teamLetter;
     }
-
-    // TODO specifications
-    public boolean canTake(Piece otherPiece) {
-        if (otherPiece == null) {
-            return true;
-        } else if (this.team != otherPiece.getTeam()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public abstract String getLetter();
 }

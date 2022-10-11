@@ -12,6 +12,7 @@ public class Game {
     private Board board;
     private boolean keepPlaying;
 
+    // MODIFIES: this
     // EFFECTS: runs the game application
     public Game() {
         runGame();
@@ -25,7 +26,7 @@ public class Game {
         System.out.println("Press g in game to see list of moves made in game so far.");
         while (keepPlaying) {
             System.out.print(board);
-            System.out.println(board.getTurn() + "'s turn.");
+            System.out.println(capitalizeFirstOnly(board.getTurn().name()) + "'s turn.");
             scanner = new Scanner(System.in);
             String input = scanner.next();
             interpret(input);
@@ -49,8 +50,9 @@ public class Game {
     // EFFECTS: gives information about who won when the game ends
     public void gameOverText() {
         System.out.println(board);
-        System.out.println(board.notTurn() + " has captured " + board.getTurn() + "'s king.");
-        System.out.println(board.notTurn() + " wins!");
+        System.out.print(capitalizeFirstOnly(board.notTurn().name()) + " has captured ");
+        System.out.println(capitalizeFirstOnly(board.getTurn().name()) + "'s king.");
+        System.out.println(capitalizeFirstOnly(board.notTurn().name()) + " wins!");
     }
 
     // MODIFIES: this
@@ -110,9 +112,9 @@ public class Game {
         }
         int startingX = getXPlace(input.charAt(1));
         int startingY = getYPlace(input.charAt(1));
-        if (startingX >= 0 && startingX <= board.getBoardWidth()) {
+        if (startingX >= 0 && startingX < board.getBoardWidth()) {
             piecePos = board.getPiecePosFromColumn(piece, new Vector(x, y), startingX);
-        } else if (startingY >= 0 && startingY <= board.getBoardHeight()) {
+        } else if (startingY >= 0 && startingY < board.getBoardHeight()) {
             piecePos = board.getPiecePosFromRow(piece, new Vector(x, y), startingY);
         } else {
             System.out.println("Invalid notation! Your piece cannot be there.");
@@ -121,14 +123,14 @@ public class Game {
         moveFromPiecePos(piecePos, new Vector(x, y));
     }
 
-    // REQUIRES: movePos is an actual position on the board
+    // REQUIRES: movePos is a position on the board
     // MODIFIES: this
     // EFFECTS: either tells player that their move is invalid or does the move on the board
     public void moveFromPiecePos(Vector piecePos, Vector movePos) {
         if (piecePos == null) {
             System.out.println("Invalid move! You do not have this piece on the board,");
             System.out.println("you do not have a piece of this type that can move to this square,");
-            System.out.println("or you have two of this piece that can move to this square.");
+            System.out.println("or you have more than one of this piece that can move to this square.");
         } else {
             if (!board.moveFoundPiece(piecePos, movePos)) {
                 System.out.println("Invalid move! You cannot move your piece there.");
@@ -170,18 +172,25 @@ public class Game {
 
     // EFFECTS: returns the piece associated with given string
     public Piece getPiece(String piece) {
-        if (piece.equals("K")) {
-            return new King(board.getTurn());
-        } else if (piece.equals("Q")) {
-            return new Queen(board.getTurn());
-        } else if (piece.equals("B")) {
-            return new Bishop(board.getTurn());
-        } else if (piece.equals("P")) {
-            return new Pawn(board.getTurn());
-        } else if (piece.equals("R")) {
-            return new Rook(board.getTurn());
-        } else {
-            return null;
+        switch (piece) {
+            case "K":
+                return new King(board.getTurn());
+            case "Q":
+                return new Queen(board.getTurn());
+            case "B":
+                return new Bishop(board.getTurn());
+            case "P":
+                return new Pawn(board.getTurn());
+            case "R":
+                return new Rook(board.getTurn());
+            default:
+                return null;
         }
+    }
+
+    // REQUIRES: str is not null or an empty string
+    // EFFECTS: returns a new string which is the old string but only the first letter is capitalized
+    public static String capitalizeFirstOnly(String str) {
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
 }

@@ -7,6 +7,7 @@ public class Menu {
     private Scanner scanner;
     private boolean keepGoing;
 
+    // MODIFIES: this
     // EFFECTS: runs the menu
     public Menu() {
         runMenu();
@@ -47,13 +48,13 @@ public class Menu {
         System.out.println("the rook can move one square in the four cardinal directions,");
         System.out.print("the bishop only on the four diagonals,");
         System.out.println("and the king can move in all 8 directions.");
-        System.out.print("The pawn can be promoted to a queen when it reaches the last row. ");
+        System.out.print("The pawn can be promoted to a queen when it reaches the last row relative to its team. ");
         System.out.println("A queen can move in all directions except the two diagonal back.");
         System.out.print("A piece is captured when the piece of the opposing team is to occupy the same space");
         System.out.println(" after the move is made.");
         System.out.println("Each turn, a player makes a move either by moving one of their existing pieces");
         System.out.println("or by placing one of their captured pieces down. Pieces cannot be placed on top of");
-        System.out.println("already placed pieces or at the very last row of the board opposite to the player.");
+        System.out.println("already placed pieces or at the very last row of the board relative to the player.");
         System.out.println("Captured queens cannot be placed as queens as must be placed as pawns.");
         System.out.println("Players must make a move each turn - a player cannot skip their turn.");
         System.out.println("A player wins if they capture their opponent's king.");

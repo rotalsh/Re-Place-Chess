@@ -3,36 +3,23 @@ package model.piece;
 import model.Vector;
 import model.Team;
 
+// A pawn is a piece that can move in the single forward direction at magnitude 1
 public class Pawn extends Piece {
 
-    // TODO specifications
+    // EFFECTS: instantiates pawn and its team
     public Pawn(Team team) {
         super(team);
     }
 
-    // TODO specifications
+    // EFFECTS: instantiates the pawn with given x and y positions and its team,
+    //          along with its single move forward of magnitude 1
     public Pawn(int x, int y, Team team) {
         super(x, y, team);
         moves.add(new Vector(0, -1));
         magnitude = 1;
     }
 
-    // TODO specifications
-    @Override
-    public String toString() {
-        String teamLetter = "";
-        switch (team) {
-            case WHITE:
-                teamLetter = "W";
-                break;
-            case BLACK:
-                teamLetter = "B";
-                break;
-        }
-        return "P_" + teamLetter;
-    }
-
-    // TODO specifications
+    // EFFECTS: returns true if given object is a pawn of the same team
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -46,6 +33,7 @@ public class Pawn extends Piece {
         return pawn.getTeam() == this.getTeam();
     }
 
+    // EFFECTS: returns the string "P"
     @Override
     public String getLetter() {
         return "P";

@@ -3,14 +3,16 @@ package model.piece;
 import model.Team;
 import model.Vector;
 
+// A bishop is a piece that can move in the four cardinals at magnitude 1
 public class Rook extends Piece {
 
-    // TODO specifications
+    // EFFECTS: instantiates rook and its team
     public Rook(Team team) {
         super(team);
     }
 
-    // TODO specifications
+    // EFFECTS: instantiates the rook with given x and y positions and its team,
+    //          along with its moves in the four cardinal directions of magnitude 1
     public Rook(int x, int y, Team team) {
         super(x, y, team);
         moves.add(new Vector(0, -1));
@@ -20,22 +22,7 @@ public class Rook extends Piece {
         magnitude = 1;
     }
 
-    // TODO specifications
-    @Override
-    public String toString() {
-        String teamLetter = "";
-        switch (team) {
-            case WHITE:
-                teamLetter = "W";
-                break;
-            case BLACK:
-                teamLetter = "B";
-                break;
-        }
-        return "R_" + teamLetter;
-    }
-
-    // TODO specifications
+    // EFFECTS: returns true if given object is a rook of the same team
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -49,6 +36,7 @@ public class Rook extends Piece {
         return rook.getTeam() == this.getTeam();
     }
 
+    // EFFECTS: returns the string "R"
     @Override
     public String getLetter() {
         return "R";

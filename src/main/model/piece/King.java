@@ -3,11 +3,16 @@ package model.piece;
 import model.Team;
 import model.Vector;
 
+// A king is a piece that can move in all eight directions at magnitude 1
 public class King extends Piece {
+
+    // EFFECTS: instantiates king and its team
     public King(Team team) {
         super(team);
     }
 
+    // EFFECTS: instantiates the king with given x and y positions and its team,
+    //          along with all eight possible moves of magnitude 1
     public King(int x, int y, Team team) {
         super(x, y, team);
         moves.add(new Vector(0, -1));
@@ -21,22 +26,7 @@ public class King extends Piece {
         magnitude = 1;
     }
 
-    // TODO specifications
-    @Override
-    public String toString() {
-        String teamLetter = "";
-        switch (team) {
-            case WHITE:
-                teamLetter = "W";
-                break;
-            case BLACK:
-                teamLetter = "B";
-                break;
-        }
-        return "K_" + teamLetter;
-    }
-
-    // TODO specifications
+    // EFFECTS: returns true if given object is a king of the same team
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -50,6 +40,7 @@ public class King extends Piece {
         return king.getTeam() == this.getTeam();
     }
 
+    // EFFECTS: returns the string "K"
     @Override
     public String getLetter() {
         return "K";

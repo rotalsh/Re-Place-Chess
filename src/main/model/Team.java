@@ -1,19 +1,6 @@
 package model;
 
+// The team a piece is on, either white or black
 public enum Team {
     WHITE, BLACK;
-
-    @Override
-    public String toString() {
-        String teamName = "";
-        switch (this) {
-            case WHITE:
-                teamName = "White";
-                break;
-            case BLACK:
-                teamName = "Black";
-                break;
-        }
-        return teamName;
-    }
 }

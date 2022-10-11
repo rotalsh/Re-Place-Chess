@@ -5,7 +5,10 @@ import model.piece.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ui.Game.capitalizeFirstOnly;
 
+// The board representing the game, has pieces on the board and in captured, whether the game has ended,
+//  whose turn it is, and the list of moves made so far
 public class Board {
     private Piece[][] boardPieces;
     private List<Piece> capturedPieces;
@@ -37,28 +40,30 @@ public class Board {
                         new Rook(2, 3, Team.WHITE)}};
     }
 
-    // TODO specifications
+    // REQUIRES: pieceAtMovePos is not null
+    // MODIFIES: this
+    // EFFECTS: add piece to list of captured pieces
+    //          if queen, add a pawn instead
     public void addToCapturedPieces(Piece pieceAtMovePos) {
         if (pieceAtMovePos instanceof Queen) {
-            capturedPieces.add(new Pawn(pieceAtMovePos.getTeam()));
+            capturedPieces.add(new Pawn(0, 0, pieceAtMovePos.getTeam()));
         } else {
             capturedPieces.add(pieceAtMovePos);
         }
     }
 
-    // TODO specifications
+    // MODIFIES: this
+    // EFFECTS: changes the turn from white to black and vice versa
     public void changeTurn() {
-        switch (turn) {
-            case WHITE:
-                turn = Team.BLACK;
-                break;
-            case BLACK:
-                turn = Team.WHITE;
-                break;
+        if (turn.equals(Team.WHITE)) {
+            turn = Team.BLACK;
+        } else {
+            turn = Team.WHITE;
         }
     }
 
-    // TODO specifications
+    // MODIFIES: this
+    // EFFECTS: ends the game if king is captured
     public void endGame() {
         King king = new King(notTurn());
         if (capturedPieces.contains(king)) {
@@ -66,7 +71,29 @@ public class Board {
         }
     }
 
-    // TODO specifications
+    // REQUIRES: piece is not null, movePos is a position on the board
+    // EFFECTS: returns true if the piece can be placed on the given position of the board
+    public boolean canPlace(Piece piece, Vector movePos) {
+        int x = movePos.getXcomp();
+        int y = movePos.getYcomp();
+        if (boardPieces[y][x] != null) {
+            return false;
+        }
+        if (piece.getTeam().equals(Team.WHITE)) {
+            if (y == 0) {
+                return false;
+            }
+        } else {
+            if (y == boardPieces.length - 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // REQUIRES: piece is not null, movePos is an unoccupied position on the board
+    // MODIFIES: this
+    // EFFECTS: places a piece of the same type as given on the given position
     public boolean placePiece(Piece piece, Vector movePos) {
         int x = movePos.getXcomp();
         int y = movePos.getYcomp();
@@ -83,29 +110,8 @@ public class Board {
         return false;
     }
 
-    // TODO specifications
-    public boolean canPlace(Piece piece, Vector movePos) {
-        int x = movePos.getXcomp();
-        int y = movePos.getYcomp();
-        if (boardPieces[y][x] != null) {
-            return false;
-        }
-        switch (piece.getTeam()) {
-            case WHITE:
-                if (y == 0) {
-                    return false;
-                }
-                break;
-            case BLACK:
-                if (y == boardPieces.length - 1) {
-                    return false;
-                }
-                break;
-        }
-        return true;
-    }
-
-    // TODO specifications
+    // MODIFIES: this
+    // EFFECTS: promotes a pawn if it is on the last row relative to its team
     public void checkPromotion() {
         for (int j = 0; j < boardPieces[0].length; j++) {
             Piece piece = boardPieces[0][j];
@@ -122,20 +128,26 @@ public class Board {
         }
     }
 
+    // REQUIRES: piece is not null, vec is a position on the board
+    // MODIFIES: this
+    // EFFECTS: replaces a pawn of some team at given vec with a queen of same team at same position
     public void promotePawn(Piece piece, Vector vec) {
         int x = vec.getXcomp();
         int y = vec.getYcomp();
         boardPieces[y][x] = new Queen(x, y, piece.getTeam());
     }
 
-    // TODO specifications
+    // REQUIRES: piecePos and movePos are positions on the board
+    // MODIFIES: this
+    // EFFECTS: places piece at piecePos on movePos if possible, and if so, capture piece at movePos if there,
+    //          add the move to list of moves, change the turn, check for pawn promotion, check for game end
     public boolean moveFoundPiece(Vector piecePos, Vector movePos) {
         Piece currPiece = boardPieces[piecePos.getYcomp()][piecePos.getXcomp()];
         Piece pieceAtMovePos = boardPieces[movePos.getYcomp()][movePos.getXcomp()];
         if (currPiece.canTake(pieceAtMovePos)) {
             addMove(currPiece, pieceAtMovePos, movePos);
             boardPieces[movePos.getYcomp()][movePos.getXcomp()] = currPiece;
-            currPiece.move(movePos);
+            currPiece.placePiece(movePos);
             boardPieces[piecePos.getYcomp()][piecePos.getXcomp()] = null;
             if (pieceAtMovePos != null) {
                 pieceAtMovePos.setOppositeTeam();
@@ -150,13 +162,19 @@ public class Board {
         }
     }
 
-    private void addMove(Piece currPiece, Vector movePos) {
+    // REQUIRES: currPiece is not null, movePos is a position on the board
+    // MODIFIES: this
+    // EFFECTS: adds the string representation of a  placing of a piece into list of moves
+    public void addMove(Piece currPiece, Vector movePos) {
         String pieceLetter = currPiece.getLetter();
         String moveString = vectorToString(movePos);
         String total = "@" + pieceLetter + moveString;
         movesMade.add(total);
     }
 
+    // REQUIRES: currPiece is not null, movePos is a position on the board
+    // MODIFIES: this
+    // EFFECTS: adds the string representation of a moving of a piece into list of moves
     public void addMove(Piece currPiece, Piece pieceAtMovePos, Vector movePos) {
         String pieceLetter = currPiece.getLetter();
         String extraLetter = "";
@@ -173,6 +191,8 @@ public class Board {
         movesMade.add(total);
     }
 
+    // REQUIRES: currPiece is not null, movePos is not null
+    // EFFECTS: returns the string "=Q" if the piece is a pawn and the move promotes the pawn
     public String determinePromotion(Piece currPiece, Vector movePos) {
         if (currPiece.getTeam().equals(Team.WHITE) && movePos.getYcomp() == 0) {
             return "=Q";
@@ -183,6 +203,7 @@ public class Board {
         }
     }
 
+    // EFFECTS: returns "#" if the piece to be captured is a king
     public String determineIfCaptureKing(Piece pieceAtMovePos) {
         King king = new King(notTurn());
         if (king.equals(pieceAtMovePos)) {
@@ -192,20 +213,26 @@ public class Board {
         }
     }
 
+    // REQUIRES: movePos is not null
+    // EFFECTS: returns the vector position as a string representing a position on the board
     public String vectorToString(Vector movePos) {
         String x = posXToString(movePos.getXcomp());
         String y = posYToString(movePos.getYcomp());
         return x + y;
     }
 
+    // EFFECTS: returns string representing of a number as a column on the board
     public String posXToString(int x) {
         return String.valueOf((char) (x + 97));
     }
 
+    // EFFECTS: returns string representing of a number as a row on the board
     public String posYToString(int y) {
         return String.valueOf((char) (48 + getBoardHeight() - y));
     }
 
+    // REQUIRES: currPiece is not null
+    // EFFECTS: returns true if there is more than one piece of the same type of same team in the row
     public boolean sameRow(Piece currPiece) {
         int row = currPiece.getPosY();
         int count = 0;
@@ -214,9 +241,11 @@ public class Board {
                 count++;
             }
         }
-        return (count == 2);
+        return (count > 1);
     }
 
+    // REQUIRES: currPiece is not null
+    // EFFECTS: returns true if there is more than one piece of the same type of same team in the column
     public boolean sameColumn(Piece currPiece) {
         int column = currPiece.getPosX();
         int count = 0;
@@ -225,9 +254,10 @@ public class Board {
                 count++;
             }
         }
-        return (count == 2);
+        return (count > 1);
     }
 
+    // EFFECTS: returns "" if the pieceAtMovePos is null, "x" if it's not null
     public String determineString(Piece pieceAtMovePos) {
         if (pieceAtMovePos == null) {
             return "";
@@ -236,7 +266,9 @@ public class Board {
         }
     }
 
-    // TODO specifications
+    // REQUIRES: piece is not null, movePos is not null
+    // EFFECTS: returns the position vector of the piece of same team that can move to given movePos,
+    //          returns null if no such piece exists or more than one piece exists
     public Vector getPiecePos(Piece piece, Vector movePos) {
         Vector vec = null;
         int count = 0;
@@ -254,13 +286,12 @@ public class Board {
         return null;
     }
 
-    // TODO specifications
+    // REQUIRES: piece is not null, movePos is not null, 0 <= x < getBoardWidth()
+    // EFFECTS: returns the position vector of the piece of same team on given column that can move to given movePos,
+    //          returns null if no such piece exists or more than one piece exists
     public Vector getPiecePosFromColumn(Piece piece, Vector movePos, int x) {
         Vector vec = null;
         int count = 0;
-        if (x >= boardPieces[0].length) {
-            return null;
-        }
 
         for (int i = 0; i < boardPieces.length; i++) {
             if (piece.equals(boardPieces[i][x]) && boardPieces[i][x].validMove(movePos)) {
@@ -274,13 +305,12 @@ public class Board {
         return null;
     }
 
-    // TODO specifications
+    // REQUIRES: piece is not null, movePos is not null, 0 <= x < getBoardHeight()
+    // EFFECTS: returns the position vector of the piece of same team on given row that can move to given movePos,
+    //          returns null if no such piece exists or more than one piece exists
     public Vector getPiecePosFromRow(Piece piece, Vector movePos, int y) {
         Vector vec = null;
         int count = 0;
-        if (y >= boardPieces.length) {
-            return null;
-        }
 
         for (int j = 0; j < boardPieces[y].length; j++) {
             if (piece.equals(boardPieces[y][j]) && boardPieces[y][j].validMove(movePos)) {
@@ -295,6 +325,8 @@ public class Board {
     }
 
     // EFFECTS: returns the state of the board as a string
+    //          shows which pieces on which team are on which squares,
+    //          as well as the pieces in each player's captured pieces
     @Override
     public String toString() {
         String boardString = " -------------------\n";
@@ -318,33 +350,15 @@ public class Board {
         return boardString;
     }
 
-    // TODO specifications
-    public static String capturedPiecesAsString(List<Piece> pieces, Team team) {
-        String piecesString = "";
-        switch (team) {
-            case WHITE:
-                piecesString += "White's captured pieces:";
-                break;
-            case BLACK:
-                piecesString += "Black's captured pieces:";
-                break;
-        }
+    // EFFECTS: returns the string format of captured pieces of given team
+    public String capturedPiecesAsString(List<Piece> pieces, Team team) {
+        String piecesString = capitalizeFirstOnly(team.name()) + "'s captured pieces:";
         for (Piece piece : pieces) {
             if (piece.getTeam().equals(team)) {
                 piecesString += " " + piece.toString();
             }
         }
         return piecesString + "\n";
-    }
-
-    // TODO specifications
-    public Team getTurn() {
-        return turn;
-    }
-
-    // TODO specifications
-    public boolean isGameOver() {
-        return gameOver;
     }
 
     public String movesToString() {
@@ -358,21 +372,48 @@ public class Board {
         return string; // stub
     }
 
+    // GETTERS
+
+    // EFFECTS: returns whose turn it currently is
+    public Team getTurn() {
+        return turn;
+    }
+
+    // EFFECTS: returns whose turn it currently isn't
+    public Team notTurn() {
+        if (turn.equals(Team.WHITE)) {
+            return Team.BLACK;
+        } else {
+            return Team.WHITE;
+        }
+    }
+
+    public Piece[][] getBoardPieces() {
+        return boardPieces;
+    }
+
+    // EFFECTS: returns list of captured pieces
+    public List<Piece> getCapturedPieces() {
+        return capturedPieces;
+    }
+
+    // EFFECTS: returns list of moves made
+    public List<String> getMovesMade() {
+        return movesMade;
+    }
+
+    // EFFECTS: returns true if game is over
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    // EFFECTS: returns the height of the board
     public int getBoardHeight() {
         return boardPieces.length;
     }
 
+    // EFFECTS: returns the width of the board
     public int getBoardWidth() {
         return boardPieces[0].length;
-    }
-
-    public Team notTurn() {
-        switch (turn) {
-            case WHITE:
-                return Team.BLACK;
-            case BLACK:
-                return Team.WHITE;
-        }
-        return null;
     }
 }

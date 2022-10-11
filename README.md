@@ -46,6 +46,6 @@ to a list of moves that have been made so far
 have been made so far printed out in some format
 - As a user, I want to be able to start a new game 
 - As a user, I want to be able to make moves along with
-the other player that would allow me to capture the king (win 
+the other player that would allow me to capture their king (win 
 the game)
  
