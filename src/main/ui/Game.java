@@ -56,7 +56,7 @@ public class Game {
     }
 
     // MODIFIES: this
-    // EFFECTS: processes user command
+    // EFFECTS: interprets user input
     public void interpret(String input) {
         if (input.equals("q")) {
             keepPlaying = false;
@@ -70,7 +70,7 @@ public class Game {
     }
 
     // MODIFIES: this
-    // EFFECTS: processes a user move
+    // EFFECTS: interprets a user move
     public void moveInterpret(String input) {
         if (input.length() > 4 || input.length() < 3) {
             System.out.println("Invalid notation! You've formatted your move incorrectly.");
@@ -87,7 +87,7 @@ public class Game {
 
     // REQUIRES: input is 3 characters long
     // MODIFIES: this
-    // EFFECTS: process a user move that is specifically three letters long
+    // EFFECTS: interpret a user move that is specifically three letters long
     public void moveInterpretThreeLetters(String input, Piece piece) {
         int x = getXPlace(input.charAt(1));
         int y = getYPlace(input.charAt(2));
@@ -101,7 +101,7 @@ public class Game {
 
     // REQUIRES: input is 4 characters long
     // MODIFIES: this
-    // EFFECTS: process a user move that is specifically four letters long
+    // EFFECTS: interpret a user move that is specifically four letters long
     public void moveInterpretFourLetters(String input, Piece piece) {
         Vector piecePos;
         int x = getXPlace(input.charAt(2));
@@ -138,6 +138,7 @@ public class Game {
         }
     }
 
+    // REQUIRES: input is not null
     // MODIFIES: this
     // EFFECTS: either tells user their move is invalid or places the piece on the board
     public void placeInterpret(String input) {

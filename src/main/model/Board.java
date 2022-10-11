@@ -7,7 +7,7 @@ import java.util.List;
 
 import static ui.Game.capitalizeFirstOnly;
 
-// The board representing the game, has pieces on the board and in captured, whether the game has ended,
+// The board representing the game, keeps track of pieces on the board and in captured, whether the game has ended,
 //  whose turn it is, and the list of moves made so far
 public class Board {
     private Piece[][] boardPieces;
@@ -17,7 +17,7 @@ public class Board {
     private List<String> movesMade;
 
     // EFFECTS: creates a new board at the start of the game, with pieces at their respective positions,
-    //          no captured pieces, a horizontal size of 3 and vertical of 4, and starts as white's turn
+    //          no captured pieces, no moves made, a horizontal size of 3 and vertical of 4, and starts as white's turn
     public Board() {
         rePlaceBoardStart();
         capturedPieces = new ArrayList<>();
@@ -72,7 +72,7 @@ public class Board {
     }
 
     // REQUIRES: piece is not null, movePos is a position on the board
-    // EFFECTS: returns true if the piece can be placed on the given position of the board
+    // EFFECTS: returns true if the piece can be placed on the given position of the board, false otherwise
     public boolean canPlace(Piece piece, Vector movePos) {
         int x = movePos.getXcomp();
         int y = movePos.getYcomp();
@@ -93,7 +93,8 @@ public class Board {
 
     // REQUIRES: piece is not null, movePos is an unoccupied position on the board
     // MODIFIES: this
-    // EFFECTS: places a piece of the same type as given on the given position
+    // EFFECTS: if a piece of same type as given is in captured, places it on the given position and returns true
+    //          if not, do nothing and return false
     public boolean placePiece(Piece piece, Vector movePos) {
         int x = movePos.getXcomp();
         int y = movePos.getYcomp();
@@ -140,7 +141,8 @@ public class Board {
     // REQUIRES: piecePos and movePos are positions on the board
     // MODIFIES: this
     // EFFECTS: places piece at piecePos on movePos if possible, and if so, capture piece at movePos if there,
-    //          add the move to list of moves, change the turn, check for pawn promotion, check for game end
+    //          add the move to list of moves, change the turn, check for pawn promotion and game end, and return true
+    //          do nothing and return false if placing a piece at piecePos is not possible
     public boolean moveFoundPiece(Vector piecePos, Vector movePos) {
         Piece currPiece = boardPieces[piecePos.getYcomp()][piecePos.getXcomp()];
         Piece pieceAtMovePos = boardPieces[movePos.getYcomp()][movePos.getXcomp()];
@@ -164,7 +166,7 @@ public class Board {
 
     // REQUIRES: currPiece is not null, movePos is a position on the board
     // MODIFIES: this
-    // EFFECTS: adds the string representation of a  placing of a piece into list of moves
+    // EFFECTS: adds the string representation of a placing of a piece into list of moves
     public void addMove(Piece currPiece, Vector movePos) {
         String pieceLetter = currPiece.getLetter();
         String moveString = vectorToString(movePos);
@@ -214,7 +216,7 @@ public class Board {
     }
 
     // REQUIRES: movePos is not null
-    // EFFECTS: returns the vector position as a string representing a position on the board
+    // EFFECTS: returns the string representation of a vector position on the board
     public String vectorToString(Vector movePos) {
         String x = posXToString(movePos.getXcomp());
         String y = posYToString(movePos.getYcomp());
@@ -232,7 +234,7 @@ public class Board {
     }
 
     // REQUIRES: currPiece is not null
-    // EFFECTS: returns true if there is more than one piece of the same type of same team in the row
+    // EFFECTS: returns true if there is more than one piece of the same type and team in the row, false otherwise
     public boolean sameRow(Piece currPiece) {
         int row = currPiece.getPosY();
         int count = 0;
@@ -245,7 +247,7 @@ public class Board {
     }
 
     // REQUIRES: currPiece is not null
-    // EFFECTS: returns true if there is more than one piece of the same type of same team in the column
+    // EFFECTS: returns true if there is more than one piece of the same type and team in the column, false otherwise
     public boolean sameColumn(Piece currPiece) {
         int column = currPiece.getPosX();
         int count = 0;
@@ -257,7 +259,7 @@ public class Board {
         return (count > 1);
     }
 
-    // EFFECTS: returns "" if the pieceAtMovePos is null, "x" if it's not null
+    // EFFECTS: returns "x" if there is a piece to be taken at pieceAtMovePos, "" if not
     public String determineString(Piece pieceAtMovePos) {
         if (pieceAtMovePos == null) {
             return "";
@@ -305,7 +307,7 @@ public class Board {
         return null;
     }
 
-    // REQUIRES: piece is not null, movePos is not null, 0 <= x < getBoardHeight()
+    // REQUIRES: piece is not null, movePos is not null, 0 <= y < getBoardHeight()
     // EFFECTS: returns the position vector of the piece of same team on given row that can move to given movePos,
     //          returns null if no such piece exists or more than one piece exists
     public Vector getPiecePosFromRow(Piece piece, Vector movePos, int y) {
@@ -362,6 +364,8 @@ public class Board {
         return piecesString + "\n";
     }
 
+    // EFFECTS: returns the list of moves made in string formatted like this:
+    //          1. Pxb3 Bxb3 2. @Pb2 Bc4 3. Rc2
     public String movesToString() {
         String string = "";
         for (int i = 0; i < movesMade.size(); i++) {
@@ -389,6 +393,7 @@ public class Board {
         }
     }
 
+    // EFFECTS: returns the board with its pieces
     public Piece[][] getBoardPieces() {
         return boardPieces;
     }

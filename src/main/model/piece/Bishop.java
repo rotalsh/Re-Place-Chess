@@ -4,6 +4,7 @@ import model.Team;
 import model.Vector;
 
 // A bishop is a piece that can move in the four diagonals at magnitude 1
+//  Since it is a piece, it has an x and y position, a team, and a list of moves and magnitude of move
 public class Bishop extends Piece {
 
     // EFFECTS: instantiates bishop and its team
@@ -23,7 +24,7 @@ public class Bishop extends Piece {
     }
 
 
-    // EFFECTS: returns true if given object is a bishop of the same team
+    // EFFECTS: returns true if given object is a bishop of the same team, false otherwise
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

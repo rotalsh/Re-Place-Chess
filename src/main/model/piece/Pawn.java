@@ -4,6 +4,8 @@ import model.Vector;
 import model.Team;
 
 // A pawn is a piece that can move in the single forward direction at magnitude 1
+//  Since it is a piece, it has an x and y position, a team, and a list of moves and magnitude of move
+
 public class Pawn extends Piece {
 
     // EFFECTS: instantiates pawn and its team
@@ -19,7 +21,7 @@ public class Pawn extends Piece {
         magnitude = 1;
     }
 
-    // EFFECTS: returns true if given object is a pawn of the same team
+    // EFFECTS: returns true if given object is a pawn of the same team, false otherwise
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

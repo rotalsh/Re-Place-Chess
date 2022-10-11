@@ -21,7 +21,7 @@ public abstract class Piece {
         this.team = team;
     }
 
-    // EFFECTS: creates a piece on given team at given position
+    // EFFECTS: creates a piece on given team at given position with a list of empty moves
     public Piece(int x, int y, Team team) {
         posX = x;
         posY = y;
@@ -31,7 +31,7 @@ public abstract class Piece {
 
 
     // REQUIRES: movePos is not null
-    // EFFECTS: returns true if moving to movePos is a valid move for the piece
+    // EFFECTS: returns true if moving to movePos is a valid move for the piece, false otherwise
     public boolean validMove(Vector movePos) {
         Vector oldMoveVec = getPosVec().subVector(movePos);
         for (Vector move : moves) {
@@ -56,7 +56,7 @@ public abstract class Piece {
         return false;
     }
 
-    // EFFECTS: returns true if this piece can take otherPiece
+    // EFFECTS: returns true if this piece can take otherPiece, false otherwise
     public boolean canTake(Piece otherPiece) {
         if (otherPiece == null) {
             return true;

@@ -3,7 +3,8 @@ package model.piece;
 import model.Team;
 import model.Vector;
 
-// A bishop is a piece that can move in the four cardinals at magnitude 1
+// A rook is a piece that can move in the four cardinals at magnitude 1
+//  Since it is a piece, it has an x and y position, a team, and a list of moves and magnitude of move
 public class Rook extends Piece {
 
     // EFFECTS: instantiates rook and its team
@@ -22,7 +23,7 @@ public class Rook extends Piece {
         magnitude = 1;
     }
 
-    // EFFECTS: returns true if given object is a rook of the same team
+    // EFFECTS: returns true if given object is a rook of the same team, false otherwise
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

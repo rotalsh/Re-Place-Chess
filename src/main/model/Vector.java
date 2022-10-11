@@ -69,6 +69,7 @@ public class Vector {
         return ycomp;
     }
 
+    // EFFECTS: returns true if the obj is a vector with same x and y component as this, false otherwise
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

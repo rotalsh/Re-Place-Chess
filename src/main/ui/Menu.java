@@ -2,7 +2,7 @@ package ui;
 
 import java.util.Scanner;
 
-// Menu for the game - can start game or look at rules
+// Menu for the game - can start game, look at rules, or quit application
 public class Menu {
     private Scanner scanner;
     private boolean keepGoing;

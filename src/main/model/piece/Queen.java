@@ -4,6 +4,7 @@ import model.Team;
 import model.Vector;
 
 // A queen is a piece that can move in all directions except the two diagonal back of magnitude 1
+//  Since it is a piece, it has an x and y position, a team, and a list of moves and magnitude of move
 public class Queen extends Piece {
 
     // EFFECTS: instantiates queen and its team
@@ -24,7 +25,7 @@ public class Queen extends Piece {
         magnitude = 1;
     }
 
-    // EFFECTS: returns true if given object is a queen of the same team
+    // EFFECTS: returns true if given object is a queen of the same team, false otherwise
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
