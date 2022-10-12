@@ -41,7 +41,8 @@ games.
 
 In the context of this game:
 - As a user, I want to be able to make a move which 
-changes the state of the board and add it 
+changes the state of the board 
+- As a user, I want to be able to add my new move 
 to a list of moves that have been made so far
 - As a user, I want to be able to see all the moves that 
 have been made so far printed out in some format
