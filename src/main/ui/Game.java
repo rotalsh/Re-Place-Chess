@@ -73,6 +73,7 @@ public class Game {
         if (input.equals("q")) {
             keepPlaying = false;
         } else if (input.equals("m")) {
+            System.out.println("Moves made:");
             System.out.println(board.movesToString());
         } else if (String.valueOf(input.charAt(0)).equals("@")) {
             placeInterpret(input);

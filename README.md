@@ -48,8 +48,10 @@ have been made so far printed out in some format
 - As a user, I want to be able to start a new game 
 - As a user, I want to be able to make moves/play against
 another player where one of us would come out victorious 
-after capturing
-the other's king
+- As a user, I want to be able to win if I capture the 
+enemy king
+- As a user, I want to be able to win if my king stays
+in the enemy back row for one turn without being captured
 - As a user, I want to be able to spend a turn to re-place 
 pieces that I've captured, so that I can control them again
  

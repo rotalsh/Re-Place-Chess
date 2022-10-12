@@ -594,14 +594,14 @@ public class BoardTest {
     }
 
     @Test
-    public void testCanGetToNotSameRowOrColumn() {
-        assertFalse(b.canGetToNotSameRowOrColumn(bw, v12));
+    public void testCanGetToAnyWhere() {
+        assertFalse(b.canGetToAnywhere(bw, v12));
         b.addToCapturedPieces(bw);
         b.placePiece(bw, v21);
-        assertTrue(b.canGetToNotSameRowOrColumn(bw, v12));
+        assertTrue(b.canGetToAnywhere(bw, v12));
         b.changeTurn();
         b.moveFoundPiece(v21, v10);
-        assertFalse(b.canGetToNotSameRowOrColumn(bw, v12));
+        assertFalse(b.canGetToAnywhere(bw, v12));
     }
 
     @Test

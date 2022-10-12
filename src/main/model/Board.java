@@ -97,7 +97,7 @@ public class Board {
 
     // REQUIRES: piece is not null, movePos is an unoccupied position on the board
     // MODIFIES: this
-    // EFFECTS: if a piece of same type as given is in captured, places it on the given position and returns true
+    // EFFECTS: if a piece of same type as given is in captured, places it on the given position and returns true.
     //          if not, do nothing and return false
     public boolean placePiece(Piece piece, Vector movePos) {
         int x = movePos.getXcomp();
@@ -172,8 +172,8 @@ public class Board {
     // REQUIRES: piecePos and movePos are positions on the board
     // MODIFIES: this
     // EFFECTS: places piece at piecePos on movePos if possible, and if so, capture piece at movePos if there,
-    //          add the move to list of moves, change the turn, check for pawn promotion and game end, and return true
-    //          do nothing and return false if placing a piece at piecePos is not possible
+    //          add the move to list of moves, change the turn, check for pawn promotion and game end, and return true.
+    //          do nothing and return false if piece of same team is at piecePos
     public boolean moveFoundPiece(Vector piecePos, Vector movePos) {
         Piece currPiece = boardPieces[piecePos.getYcomp()][piecePos.getXcomp()];
         Piece pieceAtMovePos = boardPieces[movePos.getYcomp()][movePos.getXcomp()];
@@ -216,7 +216,7 @@ public class Board {
             extraLetter = posXToString(currPiece.getPosX());
         } else if (canGetToSameColumn(currPiece, movePos)) {
             extraLetter = posYToString(currPiece.getPosY());
-        } else if (canGetToNotSameRowOrColumn(currPiece, movePos)) {
+        } else if (canGetToAnywhere(currPiece, movePos)) {
             extraLetter = posXToString(currPiece.getPosX());
         }
         String captureString = determineString(pieceAtMovePos);
@@ -297,7 +297,10 @@ public class Board {
         return count > 1;
     }
 
-    public boolean canGetToNotSameRowOrColumn(Piece currPiece, Vector movePos) {
+    // REQUIRES: currPiece is not null
+    // EFFECTS: returns true if there is more than one piece of the same type and team that can move to movePos,
+    //          false otherwise
+    public boolean canGetToAnywhere(Piece currPiece, Vector movePos) {
         int count = 0;
         for (Piece[] boardPiece : boardPieces) {
             for (Piece piece : boardPiece) {
