@@ -230,7 +230,7 @@ public class Game {
     }
 
 
-    // EFFECTS: saves the workroom to file
+    // EFFECTS: saves the board's moves to file
     private void saveBoard() {
         try {
             jsonWriter.open();
