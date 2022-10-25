@@ -23,21 +23,6 @@ public class Bishop extends Piece {
         magnitude = 1;
     }
 
-
-    // EFFECTS: returns true if given object is a bishop of the same team, false otherwise
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        } else if (this == obj) {
-            return true;
-        } else if (!(obj instanceof Bishop)) {
-            return false;
-        }
-        Bishop bishop = (Bishop) obj;
-        return bishop.getTeam() == this.getTeam();
-    }
-
     // EFFECTS: returns the string "B"
     @Override
     public String getLetter() {

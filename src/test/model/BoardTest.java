@@ -421,6 +421,7 @@ public class BoardTest {
         b.addMove(pw, v22);
         assertEquals(1, b.getMovesMade().size());
         assertTrue(b.getMovesMade().contains("@Pc2"));
+        assertTrue(b.getLiteralMoves().contains("@Pc2"));
     }
 
     @Test
@@ -429,11 +430,14 @@ public class BoardTest {
         b.addMove(rw, null, v22);
         assertEquals(1, b.getMovesMade().size());
         assertTrue(b.getMovesMade().contains("Rc2"));
+        assertTrue(b.getLiteralMoves().contains("Rc2"));
 
         b.addMove(pb, pw, v12);
         assertEquals(2, b.getMovesMade().size());
         assertTrue(b.getMovesMade().contains("Rc2"));
         assertTrue(b.getMovesMade().contains("Pxb2"));
+        assertTrue(b.getLiteralMoves().contains("Rc2"));
+        assertTrue(b.getLiteralMoves().contains("Pb2"));
     }
 
     @Test
@@ -465,6 +469,7 @@ public class BoardTest {
         b.addMove(rw, null, v13);
         assertEquals(5, b.getMovesMade().size());
         assertEquals("Rcb1", b.getMovesMade().get(4));
+        assertEquals("Rcb1", b.getLiteralMoves().get(4));
 
         b.moveFoundPiece(v03, v13);
         assertEquals(6, b.getMovesMade().size());
@@ -472,6 +477,7 @@ public class BoardTest {
         b.addMove(rw, null, v03);
         assertEquals(7, b.getMovesMade().size());
         assertEquals("Ra1", b.getMovesMade().get(6));
+        assertEquals("Ra1", b.getLiteralMoves().get(6));
     }
 
     @Test
@@ -483,6 +489,7 @@ public class BoardTest {
         b.addMove(rw, null, v22);
         assertEquals(2, b.getMovesMade().size());
         assertEquals("R1c2", b.getMovesMade().get(1));
+        assertEquals("R1c2", b.getLiteralMoves().get(1));
     }
 
     @Test
@@ -494,6 +501,7 @@ public class BoardTest {
         b.addMove(bw, null, v12);
         assertEquals(2, b.getMovesMade().size());
         assertEquals("Bcb2", b.getMovesMade().get(1));
+        assertEquals("Bcb2", b.getLiteralMoves().get(1));
     }
 
     @Test
@@ -512,6 +520,7 @@ public class BoardTest {
         assertEquals(Team.BLACK, b.getTurn());
         assertEquals(3, b.getMovesMade().size());
         assertEquals("Pb4=Q", b.getMovesMade().get(2));
+        assertEquals("Pb4", b.getLiteralMoves().get(2));
     }
 
     @Test
@@ -537,6 +546,7 @@ public class BoardTest {
         assertEquals(Team.BLACK, b.getTurn());
         assertEquals(2, b.getMovesMade().size());
         assertEquals("Pxb4=Q#", b.getMovesMade().get(1));
+        assertEquals("Pb4", b.getLiteralMoves().get(1));
     }
 
     @Test

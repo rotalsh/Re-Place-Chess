@@ -27,20 +27,6 @@ public class King extends Piece {
         magnitude = 1;
     }
 
-    // EFFECTS: returns true if given object is a king of the same team, false otherwise
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        } else if (this == obj) {
-            return true;
-        } else if (!(obj instanceof King)) {
-            return false;
-        }
-        King king = (King) obj;
-        return king.getTeam() == this.getTeam();
-    }
-
     // EFFECTS: returns the string "K"
     @Override
     public String getLetter() {

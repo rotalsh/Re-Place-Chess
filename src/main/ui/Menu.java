@@ -1,11 +1,17 @@
 package ui;
 
+import model.Board;
+import persistence.JsonReader;
+
+import java.io.IOException;
 import java.util.Scanner;
 
 // Menu for the game - can start game, look at rules, or quit application
 public class Menu {
+    private static final String JSON_STORE = "./data/game.json";
     private Scanner scanner;
     private boolean keepGoing;
+    private JsonReader jsonReader;
 
     // MODIFIES: this
     // EFFECTS: runs the menu
@@ -13,13 +19,16 @@ public class Menu {
         runMenu();
     }
 
+    // took ideas from the TellerApp
     // MODIFIES: this
     // EFFECTS: processes user input
     public void runMenu() {
         scanner = new Scanner(System.in);
+        jsonReader = new JsonReader(JSON_STORE);
         keepGoing = true;
         while (keepGoing) {
-            System.out.println("Press n for new game, r for rules and how to play, and q to quit.");
+            System.out.print("Press n for new game, l to load saved game, ");
+            System.out.println("r for rules and how to play, and q to quit.");
             String input = scanner.next();
             menuInterpret(input);
         }
@@ -34,11 +43,15 @@ public class Menu {
                 break;
             case "n":
                 keepGoing = false;
-                new Game();
+                new Game(new Board());
                 break;
             case "r":
                 printRules();
                 printHowToPlay();
+                break;
+            case "l":
+                keepGoing = false;
+                loadBoard();
                 break;
             default:
                 System.out.println("That is not a recognized command.");
@@ -80,5 +93,19 @@ public class Menu {
         System.out.println("To place a piece down, use the format:");
         System.out.println("@PieceLetterPlaceToMoveTo.");
         System.out.println("So, if I wanted to place a pawn down at a2, I would type @Pa2.\n");
+    }
+
+
+    // MODIFIES: this
+    // EFFECTS: loads workroom from file
+    private void loadBoard() {
+        try {
+            Board bd = jsonReader.read();
+            System.out.println("Loaded state of board from " + JSON_STORE);
+            System.out.println("Moves made in loaded game " + bd.movesToString());
+            new Game(bd);
+        } catch (IOException e) {
+            System.out.println("Unable to read from file: " + JSON_STORE);
+        }
     }
 }

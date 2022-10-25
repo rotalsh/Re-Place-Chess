@@ -25,20 +25,6 @@ public class Queen extends Piece {
         magnitude = 1;
     }
 
-    // EFFECTS: returns true if given object is a queen of the same team, false otherwise
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        } else if (this == obj) {
-            return true;
-        } else if (!(obj instanceof Queen)) {
-            return false;
-        }
-        Queen queen = (Queen) obj;
-        return queen.getTeam() == this.getTeam();
-    }
-
     // EFFECTS: returns the string "Q"
     @Override
     public String getLetter() {

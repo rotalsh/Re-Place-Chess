@@ -21,20 +21,6 @@ public class Pawn extends Piece {
         magnitude = 1;
     }
 
-    // EFFECTS: returns true if given object is a pawn of the same team, false otherwise
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        } else if (this == obj) {
-            return true;
-        } else if (!(obj instanceof Pawn)) {
-            return false;
-        }
-        Pawn pawn = (Pawn) obj;
-        return pawn.getTeam() == this.getTeam();
-    }
-
     // EFFECTS: returns the string "P"
     @Override
     public String getLetter() {

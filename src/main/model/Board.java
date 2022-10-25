@@ -1,28 +1,36 @@
 package model;
 
 import model.piece.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import persistence.Writable;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static ui.Game.capitalizeFirstOnly;
 
 // The board representing the game, keeps track of pieces on the board and in captured, whether the game has ended,
 //  whose turn it is, and the list of moves made so far
-public class Board {
+public class Board implements Writable {
     private Piece[][] boardPieces;
     private List<Piece> capturedPieces;
     private int gameState;
     private Team turn;
     private Team kingInEnemyLines;
     private List<String> movesMade;
+    private List<String> literalMoves;
 
     // EFFECTS: creates a new board at the start of the game, with pieces at their respective positions,
-    //          no captured pieces, no moves made, a horizontal size of 3 and vertical of 4, and starts as white's turn
+    //          no captured pieces, no moves made, no literal moves made,
+    //          a horizontal size of 3 and vertical of 4, and starts as white's turn
+    //          gameState is 0 normally, 1 if king captured, 2 if king in enemy lines, 3 if king successfully stays
     public Board() {
         rePlaceBoardStart();
         capturedPieces = new ArrayList<>();
-        movesMade = new ArrayList<>();
+        movesMade = new LinkedList<>();
+        literalMoves = new LinkedList<>();
         gameState = 0;
         turn = Team.WHITE;
     }
@@ -198,17 +206,19 @@ public class Board {
 
     // REQUIRES: currPiece is not null, movePos is a position on the board
     // MODIFIES: this
-    // EFFECTS: adds the string representation of a placing of a piece into list of moves
+    // EFFECTS: adds the string representation of a placing of a piece into list of moves and to literal moves
     public void addMove(Piece currPiece, Vector movePos) {
         String pieceLetter = currPiece.getLetter();
         String moveString = vectorToString(movePos);
         String total = "@" + pieceLetter + moveString;
+        literalMoves.add(total);
         movesMade.add(total);
     }
 
     // REQUIRES: currPiece is not null, movePos is a position on the board
     // MODIFIES: this
     // EFFECTS: adds the string representation of a moving of a piece into list of moves
+    //          also adds the literal move (no captures/promotion) to list of literal moves
     public void addMove(Piece currPiece, Piece pieceAtMovePos, Vector movePos) {
         String pieceLetter = currPiece.getLetter();
         String extraLetter = "";
@@ -224,6 +234,8 @@ public class Board {
         String moveString = vectorToString(movePos);
         String promoteToQueen = determinePromotion(currPiece, movePos);
         String total = pieceLetter + extraLetter + captureString + moveString + promoteToQueen + captureKing;
+        String literalTotal = pieceLetter + extraLetter + moveString;
+        literalMoves.add(literalTotal);
         movesMade.add(total);
     }
 
@@ -430,6 +442,8 @@ public class Board {
         return string.toString(); // stub
     }
 
+
+
     // GETTERS
 
     // EFFECTS: returns whose turn it currently is
@@ -461,6 +475,11 @@ public class Board {
         return movesMade;
     }
 
+    // EFFECTS: returns list of literal moves made
+    public List<String> getLiteralMoves() {
+        return literalMoves;
+    }
+
     // EFFECTS: returns true if game is over
     public int getGameState() {
         return gameState;
@@ -479,5 +498,21 @@ public class Board {
     // EFFECTS: returns the team of the king first in enemy lines
     public Team getKingInEnemyLines() {
         return kingInEnemyLines;
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("moves made", movesToJson());
+        return json;
+    }
+
+    private JSONArray movesToJson() {
+        JSONArray jsonArray = new JSONArray();
+
+        for (String move : literalMoves) {
+            jsonArray.put(move);
+        }
+        return jsonArray;
     }
 }

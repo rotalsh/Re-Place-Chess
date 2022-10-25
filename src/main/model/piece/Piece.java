@@ -5,6 +5,7 @@ import model.Team;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 // An abstract representation of a piece, with an X and Y position, a team,
 //  and the direction and magnitude of the moves it can make
@@ -132,5 +133,18 @@ public abstract class Piece {
             teamLetter = "B";
         }
         return getLetter() + "_" + teamLetter;
+    }
+
+    // EFFECTS: returns true if given object is a piece of the same team, false otherwise
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Piece piece = (Piece) o;
+        return getTeam() == piece.getTeam();
     }
 }

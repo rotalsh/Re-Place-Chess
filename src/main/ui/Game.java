@@ -3,43 +3,52 @@ package ui;
 import model.Board;
 import model.Vector;
 import model.piece.*;
+import persistence.JsonReader;
+import persistence.JsonWriter;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 // Game application UI
 public class Game {
+    private static final String JSON_STORE = "./data/game.json";
     private Scanner scanner;
     private Board board;
     private boolean keepPlaying;
+    private JsonWriter jsonWriter;
 
     // MODIFIES: this
-    // EFFECTS: runs the game application
+    // EFFECTS: initializes fields, makes new board, don't run game application
     public Game() {
+        board = new Board();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: initializes fields, takes given board, runs the game application
+    public Game(Board board) {
+        scanner = new Scanner(System.in);
+        jsonWriter = new JsonWriter(JSON_STORE);
+        this.board = board;
+        keepPlaying = true;
         runGame();
     }
 
     // MODIFIES: this
-    // EFFECTS: processes user input
+    // EFFECTS: processes user input, gives information on how game ended and allows user to save board
     private void runGame() {
-        this.board = new Board();
-        keepPlaying = true;
         System.out.println("Press m in game to see list of moves made in game so far.");
         while (keepPlaying) {
             System.out.print(board);
             System.out.println(capitalizeFirstOnly(board.getTurn().name()) + "'s turn.");
-            scanner = new Scanner(System.in);
             String input = scanner.next();
             interpret(input);
             quitPlayingIfGameOver();
         }
         if (board.getGameState() % 2 == 1) {
-            if (board.getGameState() == 1) {
-                kingCapturedText();
-            } else {
-                kingInEnemyLinesText();
-            }
-            System.out.println("Moves made:");
-            System.out.println(board.movesToString());
+            gameEnded();
+        } else {
+            saveBoard();
         }
     }
 
@@ -49,6 +58,17 @@ public class Game {
         if (board.getGameState() % 2 == 1) {
             keepPlaying = false;
         }
+    }
+
+    // EFFECTS: gives information about how the game ended
+    public void gameEnded() {
+        if (board.getGameState() == 1) {
+            kingCapturedText();
+        } else {
+            kingInEnemyLinesText();
+        }
+        System.out.println("Moves made:");
+        System.out.println(board.movesToString());
     }
 
     // EFFECTS: gives information about who won when the game ends by king capture
@@ -199,6 +219,27 @@ public class Game {
                 return new Rook(board.getTurn());
             default:
                 return null;
+        }
+    }
+
+    // EFFECTS: returns current board
+
+    public Board getBoard() {
+        return board;
+    }
+
+
+    // Persistence portion modeled after WorkRoomApp
+
+    // EFFECTS: saves the workroom to file
+    private void saveBoard() {
+        try {
+            jsonWriter.open();
+            jsonWriter.write(board);
+            jsonWriter.close();
+            System.out.println("Saved state of board to " + JSON_STORE);
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to write to file: " + JSON_STORE);
         }
     }
 

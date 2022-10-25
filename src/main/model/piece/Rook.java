@@ -23,20 +23,6 @@ public class Rook extends Piece {
         magnitude = 1;
     }
 
-    // EFFECTS: returns true if given object is a rook of the same team, false otherwise
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        } else if (this == obj) {
-            return true;
-        } else if (!(obj instanceof Rook)) {
-            return false;
-        }
-        Rook rook = (Rook) obj;
-        return rook.getTeam() == this.getTeam();
-    }
-
     // EFFECTS: returns the string "R"
     @Override
     public String getLetter() {
