@@ -6,6 +6,7 @@ import persistence.JsonReader;
 import java.io.IOException;
 import java.util.Scanner;
 
+// Persistence portion modeled after WorkRoomApp in https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo.git
 // Menu for the game - can start game, look at rules, or quit application
 public class Menu {
     private static final String JSON_STORE = "./data/game.json";

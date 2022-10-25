@@ -500,6 +500,8 @@ public class Board implements Writable {
         return kingInEnemyLines;
     }
 
+    // Method name and structure taken from https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo.git
+    // EFFECTS: returns a board's moves as a JSONObject
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
@@ -507,6 +509,7 @@ public class Board implements Writable {
         return json;
     }
 
+    // EFFECTS: returns literal moves that have been made on this board as a JSON array
     private JSONArray movesToJson() {
         JSONArray jsonArray = new JSONArray();
 

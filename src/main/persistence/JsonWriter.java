@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 import java.io.*;
 
-// modeled from the persistence file given
+// Class and method structure taken from https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo.git
 // Represents a writer that writes JSON representation of board and moves to file
 public class JsonWriter {
     private static final int TAB = 4;

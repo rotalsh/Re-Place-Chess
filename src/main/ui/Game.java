@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
+// Persistence portion modeled after WorkRoomApp in https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo.git
 // Game application UI
 public class Game {
     private static final String JSON_STORE = "./data/game.json";
@@ -228,8 +229,6 @@ public class Game {
         return board;
     }
 
-
-    // Persistence portion modeled after WorkRoomApp
 
     // EFFECTS: saves the workroom to file
     private void saveBoard() {

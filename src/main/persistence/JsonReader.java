@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
-// modeled from the persistence file given
+// Class and method structure taken from https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo.git
 // Represents a reader that reads board and moves from JSON data stored in file
 public class JsonReader {
     private String source;
