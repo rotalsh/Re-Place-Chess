@@ -5,6 +5,8 @@ import model.Vector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Objects;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PawnTest {
@@ -38,6 +40,12 @@ public class PawnTest {
         assertTrue(p1.equals(p1));
         assertTrue(p1.equals(new Pawn(Team.WHITE)));
         assertFalse(p1.equals(new King(Team.WHITE)));
+    }
+
+    @Test
+    public void testHashCode() {
+        assertEquals(Objects.hash(Team.WHITE), p1.hashCode());
+        assertEquals(Objects.hash(Team.BLACK), p2.hashCode());
     }
 
     @Test

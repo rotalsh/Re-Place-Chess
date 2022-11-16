@@ -5,6 +5,8 @@ import model.Vector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Objects;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RookTest {
@@ -41,6 +43,12 @@ public class RookTest {
         assertTrue(r1.equals(r1));
         assertTrue(r1.equals(new Rook(Team.WHITE)));
         assertFalse(r1.equals(new Bishop(Team.WHITE)));
+    }
+
+    @Test
+    public void testHashCode() {
+        assertEquals(Objects.hash(Team.WHITE), r1.hashCode());
+        assertEquals(Objects.hash(Team.BLACK), r2.hashCode());
     }
 
     @Test

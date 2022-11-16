@@ -5,6 +5,8 @@ import model.Vector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Objects;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class QueenTest {
@@ -43,6 +45,12 @@ public class QueenTest {
         assertTrue(q1.equals(q1));
         assertTrue(q1.equals(new Queen(Team.WHITE)));
         assertFalse(q1.equals(new Bishop(Team.WHITE)));
+    }
+
+    @Test
+    public void testHashCode() {
+        assertEquals(Objects.hash(Team.WHITE), q1.hashCode());
+        assertEquals(Objects.hash(Team.BLACK), q2.hashCode());
     }
 
     @Test

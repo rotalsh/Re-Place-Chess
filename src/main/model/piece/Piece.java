@@ -135,6 +135,11 @@ public abstract class Piece {
         return getLetter() + "_" + teamLetter;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTeam());
+    }
+
     // EFFECTS: returns true if given object is a piece of the same team, false otherwise
     @Override
     public boolean equals(Object o) {

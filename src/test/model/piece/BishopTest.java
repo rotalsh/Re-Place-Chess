@@ -5,6 +5,8 @@ import model.Vector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Objects;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class BishopTest {
@@ -41,6 +43,12 @@ class BishopTest {
         assertTrue(b1.equals(b1));
         assertTrue(b1.equals(new Bishop(Team.WHITE)));
         assertFalse(b1.equals(new King(Team.WHITE)));
+    }
+
+    @Test
+    public void testHashCode() {
+        assertEquals(Objects.hash(Team.WHITE), b1.hashCode());
+        assertEquals(Objects.hash(Team.BLACK), b2.hashCode());
     }
 
     @Test
