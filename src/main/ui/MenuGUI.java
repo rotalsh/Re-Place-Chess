@@ -9,8 +9,8 @@ import java.awt.event.MouseEvent;
 // GUI modelled after AlarmControllerUI in AlarmSystem project
 // https://github.students.cs.ubc.ca/CPSC210/AlarmSystem.git
 public class MenuGUI extends JFrame {
-    public static final int WIDTH = 800;
-    public static final int HEIGHT = 700;
+    public static final int WIDTH = 600;
+    public static final int HEIGHT = 680;
     private JDesktopPane desktop;
     private JInternalFrame menuButtons;
 
@@ -20,16 +20,15 @@ public class MenuGUI extends JFrame {
         desktop.addMouseListener(new DesktopFocusAction());
 
         menuButtons = new JInternalFrame("Menu Options");
-        menuButtons.setLayout(new BorderLayout());
 
         setContentPane(desktop);
         setTitle("Re-Place Chess");
         setSize(WIDTH, HEIGHT);
 
         addButtonPanel();
-
-        menuButtons.pack();
-        menuButtons.setVisible(true);
+        menuButtons.setSize(300, 200);
+        menuButtons.setLocation(WIDTH / 2 - menuButtons.getWidth() / 2,
+                HEIGHT / 2 - menuButtons.getHeight() / 2);
         desktop.add(menuButtons);
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -47,6 +46,10 @@ public class MenuGUI extends JFrame {
         buttonPanel.add(new JButton(new HowToPlayAction()));
         buttonPanel.add(new JButton(new QuitMenuAction()));
 
+        menuButtons.setLayout(new BorderLayout());
+        menuButtons.pack();
+        menuButtons.setVisible(true);
+
         menuButtons.add(buttonPanel);
     }
 
@@ -58,6 +61,7 @@ public class MenuGUI extends JFrame {
             super("New Game");
         }
 
+        // MODIFIES: this
         // EFFECTS: starts new game when action performed
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -113,6 +117,7 @@ public class MenuGUI extends JFrame {
         }
     }
 
+    // EFFECTS:
     // Represents action to be taken when user clicks desktop
     // to switch focus. (Needed for key handling.) Method taken from AlarmSystem project
     private class DesktopFocusAction extends MouseAdapter {
@@ -122,6 +127,7 @@ public class MenuGUI extends JFrame {
         }
     }
 
+    // EFFECTS:
     // Helper to centre main application window on desktop
     // Method taken from AlarmSystem project
     private void centreOnScreen() {

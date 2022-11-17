@@ -56,7 +56,7 @@ public class Board implements Writable {
     public void addToCapturedPieces(Piece pieceAtMovePos) {
         if (pieceAtMovePos instanceof Queen) {
             capturedPieces.add(new Pawn(0, 0, pieceAtMovePos.getTeam()));
-        } else {
+        } else if (!(pieceAtMovePos instanceof King)) {
             capturedPieces.add(pieceAtMovePos);
         }
     }
