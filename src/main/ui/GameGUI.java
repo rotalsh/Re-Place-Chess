@@ -24,6 +24,7 @@ public class GameGUI extends JFrame {
     private JTextField fieldToAddTextMove;
     private JInternalFrame controlButtons;
     private JInternalFrame boardGUI;
+    private boolean gameOver;
 
     // textState represents the way text will be shown in MovesMadeText
     // 0 is text wrapped, 1 is with line breaks, 2 is no numbers, and 3 is literal moves
@@ -33,6 +34,7 @@ public class GameGUI extends JFrame {
     // EFFECTS: makes the game gui with a text field showing moves made, buttons that allow user to do different things,
     //          a text field that allows user to add moves, and a visual representation of the board
     public GameGUI() {
+        gameOver = false;
         gamePane = new JDesktopPane();
         textState = 0;
         board = new Board();
@@ -54,9 +56,11 @@ public class GameGUI extends JFrame {
     // EFFECTS: makes a visual representation of the board, with the main board and the pieces, the captured
     //          pieces of each side, and whose turn it is
     private void makeBoardGUI() {
-        // TODO: set title based on turn
-        boardGUI = new JInternalFrame("Board");
+        if (boardGUI != null) {
+            gamePane.remove(boardGUI);
+        }
 
+        boardGUI = new JInternalFrame(capitalizeFirstOnly(board.getTurn().toString()) + "'s Turn");
         boardGUI.add(makeMainBoard());
         boardGUI.add(makeWhiteCaptured());
         boardGUI.add(makeBlackCaptured());
@@ -66,7 +70,7 @@ public class GameGUI extends JFrame {
 
         boardGUI.setVisible(true);
         boardGUI.setSize(340, HEIGHT - 40);
-        boardGUI.setLocation(0,0);
+        boardGUI.setLocation(0, 0);
         gamePane.add(boardGUI);
     }
 
@@ -75,25 +79,39 @@ public class GameGUI extends JFrame {
         JInternalFrame mainBoard = new JInternalFrame("Board");
 
         mainBoard.setSize(330, 450);
-        mainBoard.setLocation(0,80);
+        mainBoard.setLocation(0, 80);
         mainBoard.setVisible(true);
 
         addBoardButtons(mainBoard);
         return mainBoard;
     }
 
+    // MODIFIES: mainBoard
+    // EFFECTS: adds buttons containing the pictures of pieces to mainBoard
     private void addBoardButtons(JInternalFrame mainBoard) {
         JPanel boardButtons = new JPanel();
         boardButtons.setLayout(new GridLayout(4, 3));
 
-        // TODO: make this show pieces
         for (int i = 0; i < board.getBoardHeight(); i++) {
             for (int j = 0; j < board.getBoardWidth(); j++) {
-                boardButtons.add(new JButton(i + ", " + j));
+                Piece piece = board.getBoardPieces()[i][j];
+                if (piece == null) {
+                    boardButtons.add(new JButton());
+                } else {
+                    boardButtons.add(new JButton(imageOf(piece)));
+                }
             }
         }
 
         mainBoard.add(boardButtons);
+    }
+
+    // REQUIRES: piece is not null
+    // EFFECTS: returns the ImageIcon containing the image of the piece based on its actual type and team
+    private ImageIcon imageOf(Piece piece) {
+        String sep = System.getProperty("file.separator");
+        return new ImageIcon(System.getProperty("user.dir") + sep
+                + "images" + sep + piece.getTeam() + piece.getLetter() + ".png");
     }
 
     // EFFECTS: returns the JInternalFrame representing the captured white pieces
@@ -103,7 +121,7 @@ public class GameGUI extends JFrame {
         addCapturedButtons(whiteCaptured, Team.WHITE);
 
         whiteCaptured.setSize(330, 80);
-        whiteCaptured.setLocation(0,0);
+        whiteCaptured.setLocation(0, 530);
         whiteCaptured.setVisible(true);
         return whiteCaptured;
     }
@@ -115,21 +133,24 @@ public class GameGUI extends JFrame {
         addCapturedButtons(blackCaptured, Team.BLACK);
 
         blackCaptured.setSize(330, 80);
-        blackCaptured.setLocation(0,530);
+        blackCaptured.setLocation(0, 0);
         blackCaptured.setVisible(true);
         return blackCaptured;
     }
 
+    // MODIFIES: capturedFrame
+    // EFFECTS: adds buttons of captured pieces of given team to given capturedFrame
     private void addCapturedButtons(JInternalFrame capturedFrame, Team team) {
-        // TODO: make this add captured pieces with respect to team
         JPanel capturedButtons = new JPanel();
-        capturedButtons.setLayout(new GridLayout(1, 6));
+        capturedButtons.setLayout(new GridLayout(1, 7));
 
-        if (team.equals(Team.WHITE)) {
-            capturedButtons.add(new JButton("w1"));
-        } else {
-            capturedButtons.add(new JButton("b1"));
-            capturedButtons.add(new JButton("b2"));
+        for (Piece piece : board.getCapturedPieces()) {
+            if (piece.getTeam().equals(team)) {
+                ImageIcon iconBeforeScaling = imageOf(piece);
+                Image imageBeforeScaling = iconBeforeScaling.getImage();
+                Image imageAfterScaling = imageBeforeScaling.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+                capturedButtons.add(new JButton(new ImageIcon(imageAfterScaling)));
+            }
         }
 
         capturedFrame.add(capturedButtons);
@@ -152,7 +173,7 @@ public class GameGUI extends JFrame {
         controlButtons.add(buttonPanel);
         controlButtons.setVisible(true);
 
-        controlButtons.setSize(240,240);
+        controlButtons.setSize(240, 240);
         controlButtons.setLocation(WIDTH - 260, 340);
 
         gamePane.add(controlButtons);
@@ -171,12 +192,12 @@ public class GameGUI extends JFrame {
         JInternalFrame buttonFrame = new JInternalFrame("Click");
         buttonFrame.add(makeMoveButton);
         buttonFrame.setVisible(true);
-        buttonFrame.setSize(120,60);
+        buttonFrame.setSize(120, 60);
         buttonFrame.setLocation(WIDTH - 140, 580);
         gamePane.add(buttonFrame);
 
         textFrame.setVisible(true);
-        textFrame.setSize(120,60);
+        textFrame.setSize(120, 60);
         textFrame.setLocation(WIDTH - 260, 580);
         gamePane.add(textFrame);
     }
@@ -194,7 +215,7 @@ public class GameGUI extends JFrame {
         movesMadeText.setEditable(false);
         JInternalFrame movesMadeBox = new JInternalFrame("Moves Made");
 
-        movesMadeBox.setSize(240,340);
+        movesMadeBox.setSize(240, 340);
         movesMadeBox.add(movesMadeScrollable);
 
         movesMadeBox.setVisible(true);
@@ -205,26 +226,55 @@ public class GameGUI extends JFrame {
     // MODIFIES: this
     // EFFECTS: updates GUI based on game state
     private void updateBoard() {
-        // TODO: include the board buttons in this method
         setNewText();
+        makeBoardGUI();
+        checkGameOver();
     }
 
     // MODIFIES: this
-    // EFFECTS: sets new text for movesMadeText based on textState
+    // EFFECTS: checks if game in board is over and end game if it is
+    private void checkGameOver() {
+        if (board.getGameState() % 2 == 1) {
+            gameOver = true;
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: sets new text for movesMadeText based on textState and whether the game has ended
     private void setNewText() {
+        String newText = "";
         switch (textState) {
             case 0:
-                movesMadeText.setText(board.movesToString());
+                newText = board.movesToString();
                 break;
             case 1:
-                movesMadeText.setText(board.movesToString("\n"));
+                newText = board.movesToString("\n");
                 break;
             case 2:
-                movesMadeText.setText(board.getMovesMade().toString());
+                newText = board.getMovesMade().toString();
                 break;
             default:
-                movesMadeText.setText(board.getLiteralMoves().toString());
+                newText = board.getLiteralMoves().toString();
         }
+        if (board.getGameState() == 1) {
+            newText += "\n" + kingCapturedText();
+        } else if (board.getGameState() == 3) {
+            newText += "\n" + kingInEnemyLinesText();
+        }
+        movesMadeText.setText(newText);
+    }
+
+    // EFFECTS: gives information about who won when the game ends by king capture
+    public String kingCapturedText() {
+        return capitalizeFirstOnly(board.notTurn().name()) + " has captured "
+                + capitalizeFirstOnly(board.getTurn().name()) + "'s king."
+                + "\n" + capitalizeFirstOnly(board.notTurn().name()) + " wins!";
+    }
+
+    // EFFECTS: gives information about who won when the game ends by king staying in enemy lines for a turn
+    public String kingInEnemyLinesText() {
+        return capitalizeFirstOnly(board.getTurn().name()) + "'s king has stayed in enemy lines for one turn."
+                + "\n" + capitalizeFirstOnly(board.getTurn().name()) + " wins!";
     }
 
     // Represents action to be taken when user wants to make a move
@@ -240,6 +290,10 @@ public class GameGUI extends JFrame {
         public void actionPerformed(ActionEvent e) {
 
             String possibleMove = fieldToAddTextMove.getText();
+
+            if (gameOver) {
+                return;
+            }
 
             if (interpret(possibleMove)) {
                 updateBoard();
@@ -480,5 +534,11 @@ public class GameGUI extends JFrame {
         int width = Toolkit.getDefaultToolkit().getScreenSize().width;
         int height = Toolkit.getDefaultToolkit().getScreenSize().height;
         setLocation((width - getWidth()) / 2, (height - getHeight()) / 2);
+    }
+
+    // REQUIRES: str is not null or an empty string
+    // EFFECTS: returns a new string which is the old string but only the first letter is capitalized
+    public static String capitalizeFirstOnly(String str) {
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
 }
