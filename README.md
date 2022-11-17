@@ -59,3 +59,45 @@ pieces that I've captured, so that I can control them again
 I want the state of the board to be saved
 - As a user, I want to have the option to continue the saved
 game if I want to
+
+## Instructions for Grader
+
+- You can generate the first required event relating to adding
+Xs to a Y by typing the move you want to make in the bottom
+right text field with title "Type" then clicking the 
+"Make Move" button next to it. This will add a move to a 
+list of moves and change the state of the board.
+- You can generate the second required event relating to adding
+Xs to a Y by clicking one of the four buttons "Wrap Text",
+"Line Break", "Moves Only", and "Literal Moves".
+    - "Wrap Text" is the default way to represent the moves
+  that have been made so far, where moves are shown with
+  numbers that show turns with "number. WHITE_MOVE 
+  BLACK_MOVE" as the format and no line breaks (text wraps
+  off the sides).
+    - "Line Break" shows the moves in almost exactly the same 
+  way as "Wrap Text" but now there are line breaks before each
+  number .
+    - "Moves Only" returns the moves made with captures and
+  promotions in an array of strings.
+    - "Literal Moves" returns the literal moves (the moves that
+  were typed in by the user) with no captures or promotion as
+  an array of strings. This is useful because you can 
+  copy and paste the array to a JSON and load a game this way.
+- You can locate my visual component on the left side after
+clicking "New Game" or "Load Game". The middle is the main 
+board that shows the pieces on the board and the 
+position where they are located (rows go up 1-4, 
+columns go right a-c). The top and bottom frames show 
+the captured pieces for each side, the top being black's 
+captured pieces and the bottom white's captured pieces. 
+The pieces are represented by geometric shapes where their 
+vertices show in which direction they can move (except the 
+pawn, which moves in the direction of the arrow).
+- You can save the state of my application by clicking the 
+"Save" button once in the GUI of the game. 
+The board will only save if the player clicks this button. 
+The board will not save automatically upon exiting the 
+application.
+- You can reload the state of my application by clicking
+the "Load Game" button in the Menu GUI.

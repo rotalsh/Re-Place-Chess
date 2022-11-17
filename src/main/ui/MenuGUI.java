@@ -1,25 +1,30 @@
 package ui;
 
+import model.Board;
+import persistence.JsonReader;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 // GUI modelled after AlarmControllerUI in AlarmSystem project
 // https://github.students.cs.ubc.ca/CPSC210/AlarmSystem.git
 public class MenuGUI extends JFrame {
     private static final int WIDTH = 600;
     private static final int HEIGHT = 680;
+    private static final String JSON_STORE = "./data/game.json";
     private JDesktopPane desktop;
     private JInternalFrame menuButtons;
-    private boolean keepGoing;
+    private JsonReader jsonReader;
 
-    // makes graphical menu
+    // EFFECTS: makes graphical menu
     public MenuGUI() {
-        keepGoing = true;
         desktop = new JDesktopPane();
         desktop.addMouseListener(new DesktopFocusAction());
+        jsonReader = new JsonReader(JSON_STORE);
 
         menuButtons = new JInternalFrame("Menu Options");
 
@@ -83,8 +88,20 @@ public class MenuGUI extends JFrame {
         // EFFECTS: loads old game when action performed
         @Override
         public void actionPerformed(ActionEvent e) {
-            // TODO: LOAD OLD GAME
+            loadBoard();
 
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: loads workroom from file
+    private void loadBoard() {
+        try {
+            Board bd = jsonReader.read();
+            new GameGUI(bd);
+            dispose();
+        } catch (IOException e) {
+            menuButtons.setTitle("Load Failed");
         }
     }
 

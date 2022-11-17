@@ -4,10 +4,12 @@ import model.Board;
 import model.Team;
 import model.Vector;
 import model.piece.*;
+import persistence.JsonWriter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.FileNotFoundException;
 
 // GUI modelled after AlarmControllerUI in AlarmSystem project
 // https://github.students.cs.ubc.ca/CPSC210/AlarmSystem.git
@@ -15,8 +17,9 @@ import java.awt.event.ActionEvent;
 // https://github.students.cs.ubc.ca/CPSC210/C3-LectureLabStarter.git
 public class GameGUI extends JFrame {
 
-    public static final int WIDTH = 600;
-    public static final int HEIGHT = 680;
+    private static final int WIDTH = 600;
+    private static final int HEIGHT = 680;
+    private static final String JSON_STORE = "./data/game.json";
     private Board board;
     private JDesktopPane gamePane;
     private JTextArea movesMadeText;
@@ -24,23 +27,38 @@ public class GameGUI extends JFrame {
     private JTextField fieldToAddTextMove;
     private JInternalFrame boardGUI;
     private boolean gameOver;
+    private JsonWriter jsonWriter;
 
     // textState represents the way text will be shown in MovesMadeText
     // 0 is text wrapped, 1 is with line breaks, 2 is no numbers, and 3 is literal moves
     private int textState;
 
-
-    // EFFECTS: makes the game gui with a text field showing moves made, buttons that allow user to do different things,
-    //          a text field that allows user to add moves, and a visual representation of the board
+    // EFFECTS: makes the game gui with a text field showing moves made with text wrapping,
+    //          buttons that allow user to do different things,
+    //          a text field that allows user to add moves,
+    //          a visual representation that starts at a new board,
+    //          and a JsonWriter that saves contents of the board to json
     public GameGUI() {
+        this(new Board());
+    }
+
+    // EFFECTS: makes the game gui with a text field showing moves made with text wrapping,
+    //          buttons that allow user to do different things,
+    //          a text field that allows user to add moves,
+    //          a visual representation that starts at the given board,
+    //          and a JsonWriter that saves contents of the board to json
+    public GameGUI(Board board) {
         gameOver = false;
         gamePane = new JDesktopPane();
+        jsonWriter = new JsonWriter(JSON_STORE);
         textState = 0;
-        board = new Board();
+        this.board = board;
+
         makeMovesMadeBox();
         makeFieldToAddTextMove();
         makeControlButtons();
         makeBoardGUI();
+        checkGameOver();
 
         setContentPane(gamePane);
         setTitle("Re-Place Chess");
@@ -223,6 +241,7 @@ public class GameGUI extends JFrame {
 
         movesMadeBox.setVisible(true);
         movesMadeBox.setLocation(WIDTH - 260, 0);
+        setNewText();
         gamePane.add(movesMadeBox);
     }
 
@@ -510,7 +529,19 @@ public class GameGUI extends JFrame {
         // EFFECTS: saves the game to json
         @Override
         public void actionPerformed(ActionEvent e) {
-            // TODO: save the game to json
+            saveBoard();
+        }
+    }
+
+    // EFFECTS: saves the board's moves to file
+    private void saveBoard() {
+        try {
+            jsonWriter.open();
+            jsonWriter.write(board);
+            jsonWriter.close();
+            textFrame.setTitle("Saved!");
+        } catch (FileNotFoundException e) {
+            textFrame.setTitle("Save Failed");
         }
     }
 
