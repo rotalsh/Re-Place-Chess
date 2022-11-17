@@ -22,7 +22,6 @@ public class GameGUI extends JFrame {
     private JTextArea movesMadeText;
     private JInternalFrame textFrame;
     private JTextField fieldToAddTextMove;
-    private JInternalFrame controlButtons;
     private JInternalFrame boardGUI;
     private boolean gameOver;
 
@@ -109,9 +108,16 @@ public class GameGUI extends JFrame {
     // REQUIRES: piece is not null
     // EFFECTS: returns the ImageIcon containing the image of the piece based on its actual type and team
     private ImageIcon imageOf(Piece piece) {
+        return imageOf(piece, "");
+    }
+
+    // REQUIRES: piece is not null
+    // EFFECTS: returns the ImageIcon containing the image of the piece based on its actual type and team
+    //          and given extra string
+    private ImageIcon imageOf(Piece piece, String extra) {
         String sep = System.getProperty("file.separator");
         return new ImageIcon(System.getProperty("user.dir") + sep
-                + "images" + sep + piece.getTeam() + piece.getLetter() + ".png");
+                + "images" + sep + piece.getTeam() + piece.getLetter() + extra + ".png");
     }
 
     // EFFECTS: returns the JInternalFrame representing the captured white pieces
@@ -146,10 +152,7 @@ public class GameGUI extends JFrame {
 
         for (Piece piece : board.getCapturedPieces()) {
             if (piece.getTeam().equals(team)) {
-                ImageIcon iconBeforeScaling = imageOf(piece);
-                Image imageBeforeScaling = iconBeforeScaling.getImage();
-                Image imageAfterScaling = imageBeforeScaling.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-                capturedButtons.add(new JButton(new ImageIcon(imageAfterScaling)));
+                capturedButtons.add(new JButton(imageOf(piece, "SCALED")));
             }
         }
 
@@ -168,7 +171,7 @@ public class GameGUI extends JFrame {
         buttonPanel.add(new JButton(new SaveAction()));
         buttonPanel.add(new JButton(new QuitAction()));
 
-        controlButtons = new JInternalFrame();
+        JInternalFrame controlButtons = new JInternalFrame();
 
         controlButtons.add(buttonPanel);
         controlButtons.setVisible(true);
@@ -242,7 +245,7 @@ public class GameGUI extends JFrame {
     // MODIFIES: this
     // EFFECTS: sets new text for movesMadeText based on textState and whether the game has ended
     private void setNewText() {
-        String newText = "";
+        String newText;
         switch (textState) {
             case 0:
                 newText = board.movesToString();
@@ -265,14 +268,14 @@ public class GameGUI extends JFrame {
     }
 
     // EFFECTS: gives information about who won when the game ends by king capture
-    public String kingCapturedText() {
+    private String kingCapturedText() {
         return capitalizeFirstOnly(board.notTurn().name()) + " has captured "
                 + capitalizeFirstOnly(board.getTurn().name()) + "'s king."
                 + "\n" + capitalizeFirstOnly(board.notTurn().name()) + " wins!";
     }
 
     // EFFECTS: gives information about who won when the game ends by king staying in enemy lines for a turn
-    public String kingInEnemyLinesText() {
+    private String kingInEnemyLinesText() {
         return capitalizeFirstOnly(board.getTurn().name()) + "'s king has stayed in enemy lines for one turn."
                 + "\n" + capitalizeFirstOnly(board.getTurn().name()) + " wins!";
     }
@@ -309,7 +312,7 @@ public class GameGUI extends JFrame {
     // MODIFIES: this
     // EFFECTS: interprets user input
     private boolean interpret(String input) {
-        if (input.isEmpty() || input == null) {
+        if (input.isEmpty()) {
             return false;
         } else if (String.valueOf(input.charAt(0)).equals("@")) {
             return placeInterpret(input);
@@ -321,7 +324,7 @@ public class GameGUI extends JFrame {
     // REQUIRES: input is not null
     // MODIFIES: this
     // EFFECTS: either tells user their move is invalid or places the piece on the board
-    public boolean placeInterpret(String input) {
+    private boolean placeInterpret(String input) {
         if (input.length() != 4) {
             return false;
         }
@@ -343,7 +346,7 @@ public class GameGUI extends JFrame {
 
     // MODIFIES: this
     // EFFECTS: interprets a user move
-    public boolean moveInterpret(String input) {
+    private boolean moveInterpret(String input) {
         if (input.length() > 4 || input.length() < 3) {
             return false;
         }
@@ -360,7 +363,7 @@ public class GameGUI extends JFrame {
     // REQUIRES: input is 3 characters long
     // MODIFIES: this
     // EFFECTS: interpret a user move that is specifically three letters long
-    public boolean moveInterpretThreeLetters(String input, Piece piece) {
+    private boolean moveInterpretThreeLetters(String input, Piece piece) {
         int x = getXPlace(input.charAt(1));
         int y = getYPlace(input.charAt(2));
         if (x < 0 || x >= board.getBoardWidth() || y < 0 || y >= board.getBoardHeight()) {
@@ -374,7 +377,7 @@ public class GameGUI extends JFrame {
     // REQUIRES: input is 4 characters long
     // MODIFIES: this
     // EFFECTS: interpret a user move that is specifically four letters long
-    public boolean moveInterpretFourLetters(String input, Piece piece) {
+    private boolean moveInterpretFourLetters(String input, Piece piece) {
         Vector piecePos;
         int x = getXPlace(input.charAt(2));
         int y = getYPlace(input.charAt(3));
@@ -396,7 +399,7 @@ public class GameGUI extends JFrame {
     // REQUIRES: movePos is a position on the board
     // MODIFIES: this
     // EFFECTS: either tells player that their move is invalid or does the move on the board
-    public boolean moveFromPiecePos(Vector piecePos, Vector movePos) {
+    private boolean moveFromPiecePos(Vector piecePos, Vector movePos) {
         if (piecePos == null) {
             return false;
         } else {
@@ -405,17 +408,17 @@ public class GameGUI extends JFrame {
     }
 
     // EFFECTS: returns X position on board from a character
-    public int getXPlace(char c) {
+    private int getXPlace(char c) {
         return (c - 97);
     }
 
     // EFFECTS: returns Y position on board from a character
-    public int getYPlace(char c) {
+    private int getYPlace(char c) {
         return (48 + board.getBoardHeight() - c);
     }
 
     // EFFECTS: returns the piece associated with given string
-    public Piece getPiece(String piece) {
+    private Piece getPiece(String piece) {
         switch (piece) {
             case "K":
                 return new King(board.getTurn());
