@@ -56,7 +56,7 @@ public class Board implements Writable {
     public void addToCapturedPieces(Piece pieceAtMovePos) {
         if (pieceAtMovePos instanceof Queen) {
             capturedPieces.add(new Pawn(0, 0, pieceAtMovePos.getTeam()));
-        } else if (!(pieceAtMovePos instanceof King)) {
+        } else {
             capturedPieces.add(pieceAtMovePos);
         }
     }
@@ -432,17 +432,23 @@ public class Board implements Writable {
     // EFFECTS: returns the list of moves made in string formatted like this:
     //          1. Pxb3 Bxb3 2. @Pb2 Bc4 3. Rc2
     public String movesToString() {
+        return movesToString("");
+    }
+
+    // EFFECTS: returns the list of moves made in string formatted like this with spacers before numbers:
+    //          1. Pxb3 Bxb3 *spacer* 2. @Pb2 Bc4 *spacer* 3. Rc2
+    public String movesToString(String spacer) {
         StringBuilder string = new StringBuilder();
         for (int i = 0; i < movesMade.size(); i++) {
-            if (i % 2 == 0) {
-                string.append(i / 2 + 1).append(". ");
+            if (i == 0) {
+                string.append("1. ");
+            } else if (i % 2 == 0) {
+                string.append(spacer).append(i / 2 + 1).append(". ");
             }
             string.append(movesMade.get(i)).append(" ");
         }
-        return string.toString(); // stub
+        return string.toString();
     }
-
-
 
     // GETTERS
 

@@ -9,13 +9,15 @@ import java.awt.event.MouseEvent;
 // GUI modelled after AlarmControllerUI in AlarmSystem project
 // https://github.students.cs.ubc.ca/CPSC210/AlarmSystem.git
 public class MenuGUI extends JFrame {
-    public static final int WIDTH = 600;
-    public static final int HEIGHT = 680;
+    private static final int WIDTH = 600;
+    private static final int HEIGHT = 680;
     private JDesktopPane desktop;
     private JInternalFrame menuButtons;
+    private boolean keepGoing;
 
     // makes graphical menu
     public MenuGUI() {
+        keepGoing = true;
         desktop = new JDesktopPane();
         desktop.addMouseListener(new DesktopFocusAction());
 
@@ -65,8 +67,8 @@ public class MenuGUI extends JFrame {
         // EFFECTS: starts new game when action performed
         @Override
         public void actionPerformed(ActionEvent e) {
-            desktop.setVisible(false);
-            setContentPane(new GameGUI());
+            new GameGUI();
+            dispose();
         }
     }
 

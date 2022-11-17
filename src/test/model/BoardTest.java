@@ -795,5 +795,6 @@ public class BoardTest {
         b.moveFoundPiece(v11, v20);
         b.moveFoundPiece(v23, v22);
         assertEquals("1. Pxb3 Bxb3 2. @Pb2 Bc4 3. Rc2 ", b.movesToString());
+        assertEquals("1. Pxb3 Bxb3 \n2. @Pb2 Bc4 \n3. Rc2 ", b.movesToString("\n"));
     }
 }
