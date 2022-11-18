@@ -116,7 +116,7 @@ public class MenuGUI extends JFrame {
         // EFFECTS: opens how to play when action performed
         @Override
         public void actionPerformed(ActionEvent e) {
-            // TODO: PULL OF SCREEN OF RULES
+            // TODO: screen of how to play and instructions
         }
     }
 

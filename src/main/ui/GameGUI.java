@@ -106,6 +106,7 @@ public class GameGUI extends JFrame {
     // MODIFIES: mainBoard
     // EFFECTS: adds buttons containing the pictures of pieces to mainBoard
     private void addBoardButtons(JInternalFrame mainBoard) {
+        // TODO: give move making functionality?
         JPanel boardButtons = new JPanel();
         boardButtons.setLayout(new GridLayout(4, 3));
 

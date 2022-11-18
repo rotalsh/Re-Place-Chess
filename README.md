@@ -55,8 +55,8 @@ enemy king
 in the enemy back row for one turn without being captured
 - As a user, I want to be able to spend a turn to re-place 
 pieces that I've captured, so that I can control them again
-- As a user, when I select the quit option while in-game,
-I want the state of the board to be saved
+- As a user, I want to have the option to save the game 
+when I want
 - As a user, I want to have the option to continue the saved
 game if I want to
 
