@@ -1,4 +1,4 @@
-# My Personal Project
+ # My Personal Project
 
 ## Re-Place Chess
 
@@ -101,3 +101,25 @@ The board will not save automatically upon exiting the
 application.
 - You can reload the state of my application by clicking
 the "Load Game" button in the Menu GUI.
+
+## Phase 4: Task 2
+Tue Nov 22 15:45:02 PST 2022\
+White's move Pxb3 added.
+
+Tue Nov 22 15:45:02 PST 2022\
+Black's move Bxb3 added.
+
+Tue Nov 22 15:45:04 PST 2022\
+Printing style of moves changed to Wrap Text.
+
+Tue Nov 22 15:45:05 PST 2022\
+Printing style of moves changed to Line Break.
+
+Tue Nov 22 15:45:14 PST 2022\
+White's move @Pb2 added.
+
+Tue Nov 22 15:45:18 PST 2022\
+Black's move Ba2 added.
+
+Tue Nov 22 15:45:19 PST 2022\
+Printing style of moves changed to Literal Moves.

@@ -4,6 +4,9 @@ import model.piece.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BoardTest {
@@ -70,6 +73,7 @@ public class BoardTest {
         assertEquals(Team.BLACK, b.notTurn());
         assertEquals(0, b.getGameState());
         assertNull(b.getKingInEnemyLines());
+        assertEquals(0, b.getTextState());
     }
 
     @Test
@@ -796,5 +800,63 @@ public class BoardTest {
         b.moveFoundPiece(v23, v22);
         assertEquals("1. Pxb3 Bxb3 2. @Pb2 Bc4 3. Rc2 ", b.movesToString());
         assertEquals("1. Pxb3 Bxb3 \n2. @Pb2 Bc4 \n3. Rc2 ", b.movesToString("\n"));
+    }
+
+    @Test
+    public void testAddMoveLog() {
+        EventLog el = EventLog.getInstance();
+        el.clear();
+
+        b.addMove(new Pawn(Team.WHITE), new Pawn(Team.BLACK), new Vector(1, 1));
+        b.changeTurn();
+        b.addMove(new Bishop(Team.BLACK), new Pawn(Team.WHITE), new Vector(1, 1));
+        b.changeTurn();
+        b.addMove(new Pawn(Team.WHITE), new Vector(1, 2));
+
+        List<Event> l = new ArrayList<>();
+
+        for (Event next : el) {
+            l.add(next);
+        }
+
+        assertEquals("White's move Pxb3 added.", l.get(1).getDescription());
+        assertEquals("Black's move Bxb3 added.", l.get(2).getDescription());
+        assertEquals("White's move @Pb2 added.", l.get(3).getDescription());
+    }
+
+    @Test
+    public void testSetTextState() {
+        b.setTextState(2);
+        assertEquals(2, b.getTextState());
+    }
+
+    @Test
+    public void testSetTextStateLog() {
+        EventLog el = EventLog.getInstance();
+        el.clear();
+
+        b.setTextState(3);
+        b.setTextState(2);
+        b.setTextState(1);
+        b.setTextState(0);
+
+        List<Event> l = new ArrayList<>();
+
+        for (Event next : el) {
+            l.add(next);
+        }
+
+        assertEquals("Printing style of moves changed to Literal Moves.", l.get(1).getDescription());
+        assertEquals("Printing style of moves changed to Moves Only.", l.get(2).getDescription());
+        assertEquals("Printing style of moves changed to Line Break.", l.get(3).getDescription());
+        assertEquals("Printing style of moves changed to Wrap Text.", l.get(4).getDescription());
+    }
+
+    @Test
+    public void testTextStateString() {
+        assertEquals("Literal Moves", b.textStateString(3));
+        assertEquals("Moves Only", b.textStateString(2));
+        assertEquals("Line Break", b.textStateString(1));
+        assertEquals("Wrap Text", b.textStateString(0));
     }
 }

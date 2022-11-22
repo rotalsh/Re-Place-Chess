@@ -1,6 +1,8 @@
 package ui;
 
 import model.Board;
+import model.Event;
+import model.EventLog;
 import model.Team;
 import model.Vector;
 import model.piece.*;
@@ -29,10 +31,6 @@ public class GameGUI extends JFrame {
     private boolean gameOver;
     private JsonWriter jsonWriter;
 
-    // textState represents the way text will be shown in MovesMadeText
-    // 0 is text wrapped, 1 is with line breaks, 2 is no numbers, and 3 is literal moves
-    private int textState;
-
     // EFFECTS: makes the game gui with a text field showing moves made with text wrapping,
     //          buttons that allow user to do different things,
     //          a text field that allows user to add moves,
@@ -51,7 +49,6 @@ public class GameGUI extends JFrame {
         gameOver = false;
         gamePane = new JDesktopPane();
         jsonWriter = new JsonWriter(JSON_STORE);
-        textState = 0;
         this.board = board;
 
         makeMovesMadeBox();
@@ -64,9 +61,25 @@ public class GameGUI extends JFrame {
         setTitle("Re-Place Chess");
         setSize(WIDTH, HEIGHT);
 
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        windowListenerHelper();
         centreOnScreen();
         setVisible(true);
+    }
+
+    // EFFECTS: adds a windowListener that prints out EventLog to console log on application close
+    // Method modelled after
+    // https://stackoverflow.com/questions/60516720/java-how-to-print-message-when-a-jframe-is-closed
+    // which was found in this Piazza post:
+    // https://piazza.com/class/l7fbq87dgzb6xp/post/1563
+    private void windowListenerHelper() {
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                printLog(EventLog.getInstance());
+                System.exit(0);
+            }
+        });
     }
 
     // MODIFIES: this
@@ -266,7 +279,7 @@ public class GameGUI extends JFrame {
     // EFFECTS: sets new text for movesMadeText based on textState and whether the game has ended
     private void setNewText() {
         String newText;
-        switch (textState) {
+        switch (board.getTextState()) {
             case 0:
                 newText = board.movesToString();
                 break;
@@ -466,7 +479,7 @@ public class GameGUI extends JFrame {
         // EFFECTS: makes moves appear without line breaks
         @Override
         public void actionPerformed(ActionEvent e) {
-            textState = 0;
+            board.setTextState(0);
             setNewText();
         }
     }
@@ -482,7 +495,7 @@ public class GameGUI extends JFrame {
         // EFFECTS: makes moves appear with line breaks
         @Override
         public void actionPerformed(ActionEvent e) {
-            textState = 1;
+            board.setTextState(1);
             setNewText();
         }
     }
@@ -498,7 +511,7 @@ public class GameGUI extends JFrame {
         // EFFECTS: makes moves appear without captures, promotion, and winning
         @Override
         public void actionPerformed(ActionEvent e) {
-            textState = 2;
+            board.setTextState(2);
             setNewText();
         }
     }
@@ -514,7 +527,7 @@ public class GameGUI extends JFrame {
         // EFFECTS: makes moves appear without numbers, captures, promotion, and winning
         @Override
         public void actionPerformed(ActionEvent e) {
-            textState = 3;
+            board.setTextState(3);
             setNewText();
         }
     }
@@ -559,6 +572,14 @@ public class GameGUI extends JFrame {
         public void actionPerformed(ActionEvent e) {
             setVisible(false);
             dispose();
+            printLog(EventLog.getInstance());
+        }
+    }
+
+    // EFFECTS: prints out the log of events in EventLog el
+    public void printLog(EventLog el) {
+        for (Event next : el) {
+            System.out.println(next + "\n");
         }
     }
 

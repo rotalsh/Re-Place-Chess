@@ -22,6 +22,10 @@ public class Board implements Writable {
     private List<String> movesMade;
     private List<String> literalMoves;
 
+    // textState represents the way text will be printed
+    // 0 is text wrapped, 1 is with line breaks, 2 is no numbers, and 3 is literal moves
+    private int textState;
+
     // EFFECTS: creates a new board at the start of the game, with pieces at their respective positions,
     //          no captured pieces, no moves made, no literal moves made,
     //          a horizontal size of 3 and vertical of 4, and starts as white's turn
@@ -33,6 +37,7 @@ public class Board implements Writable {
         literalMoves = new LinkedList<>();
         gameState = 0;
         turn = Team.WHITE;
+        textState = 0;
     }
 
     // MODIFIES: this
@@ -207,18 +212,22 @@ public class Board implements Writable {
     // REQUIRES: currPiece is not null, movePos is a position on the board
     // MODIFIES: this
     // EFFECTS: adds the string representation of a placing of a piece into list of moves and to literal moves
+    //          and logs an event indicating that a move (piece placement) has been made and added to list of moves
     public void addMove(Piece currPiece, Vector movePos) {
         String pieceLetter = currPiece.getLetter();
         String moveString = vectorToString(movePos);
         String total = "@" + pieceLetter + moveString;
         literalMoves.add(total);
         movesMade.add(total);
+        EventLog.getInstance().logEvent(new Event(capitalizeFirstOnly(turn.name()) + "'s move "
+                + total + " added."));
     }
 
     // REQUIRES: currPiece is not null, movePos is a position on the board
     // MODIFIES: this
     // EFFECTS: adds the string representation of a moving of a piece into list of moves
     //          also adds the literal move (no captures/promotion) to list of literal moves
+    //          and logs an event indicating that a move has been made and added to list of moves
     public void addMove(Piece currPiece, Piece pieceAtMovePos, Vector movePos) {
         String pieceLetter = currPiece.getLetter();
         String extraLetter = "";
@@ -237,6 +246,8 @@ public class Board implements Writable {
         String literalTotal = pieceLetter + extraLetter + moveString;
         literalMoves.add(literalTotal);
         movesMade.add(total);
+        EventLog.getInstance().logEvent(new Event(capitalizeFirstOnly(turn.name()) + "'s move "
+                + total + " added."));
     }
 
     // REQUIRES: currPiece is not null, movePos is not null
@@ -504,6 +515,33 @@ public class Board implements Writable {
     // EFFECTS: returns the team of the king first in enemy lines
     public Team getKingInEnemyLines() {
         return kingInEnemyLines;
+    }
+
+    // EFFECTS: return the current textState
+    public int getTextState() {
+        return textState;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: sets current textState to given ts
+    //          and logs an event indicating the textState has changed
+    public void setTextState(int ts) {
+        this.textState = ts;
+        String style = textStateString(ts);
+        EventLog.getInstance().logEvent(new Event("Printing style of moves changed to " + style + "."));
+    }
+
+    public String textStateString(int ts) {
+        switch (ts) {
+            case 0:
+                return "Wrap Text";
+            case 1:
+                return "Line Break";
+            case 2:
+                return "Moves Only";
+            default:
+                return "Literal Moves";
+        }
     }
 
     // Method name and structure taken from https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo.git
