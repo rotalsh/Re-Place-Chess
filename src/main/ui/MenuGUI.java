@@ -116,8 +116,70 @@ public class MenuGUI extends JFrame {
         // EFFECTS: opens how to play when action performed
         @Override
         public void actionPerformed(ActionEvent e) {
-            // TODO: screen of how to play and instructions
+            makeHowToPlay();
         }
+    }
+
+    private void makeHowToPlay() {
+        JInternalFrame howToPlay = new JInternalFrame("How To Play", false, true, false, false);
+
+        JTextArea htpText = new JTextArea();
+        Font font1 = new Font("Arial", Font.PLAIN, 18);
+        htpText.setFont(font1);
+        htpText.setLineWrap(true);
+        htpText.setWrapStyleWord(true);
+
+        JScrollPane htpTextScrollable = new JScrollPane(htpText);
+        htpText.setEditable(false);
+
+        howToPlay.add(htpTextScrollable);
+
+        setRulesText(htpText);
+        setHowToPlayText(htpText);
+
+        howToPlay.setSize(WIDTH - 15, HEIGHT - 40);
+        howToPlay.setLocation(0,0);
+        desktop.add(howToPlay);
+        howToPlay.setVisible(true);
+    }
+
+    private void setRulesText(JTextArea htpText) {
+        htpText.setText("Each player starts with one pawn, one bishop, one rook, and one king.\n"
+                + "A piece is represented as a shape whose vertices are the directions it can move.\n"
+                + "Each piece can only move one square at a time. The pawn can move only one square forward"
+                + " (represented with an arrow forward),"
+                + "the rook can move one square in the four cardinal directions"
+                + " (a diamond with vertices pointing to the four cardinals),"
+                + "the bishop only on the four diagonals (a X pointing the four diagonals)"
+                + ", and the king can move in all 8 directions (a circle).\n"
+                + "The pawn can be promoted to a queen when it reaches the last row relative to its team. "
+                + "A queen can move in all directions except the two diagonal back (half-circle with line segment"
+                + " at the back).\n"
+                + "A piece is captured when the piece of the opposing team is to occupy the same space after the "
+                + "move is made.\n"
+                + "Each turn, a player makes a move either by moving one of their existing pieces "
+                + "or by placing one of their captured pieces down. Pieces cannot be placed on top of "
+                + "already placed pieces or at the very last row of the board relative to the player.\n"
+                + "Captured queens cannot be placed as queens as must be placed as pawns.\n"
+                + "Players must make a move each turn - a player cannot skip their turn.\n"
+                + "A player wins if they capture their opponent's king, or if their king is able to "
+                + "stay a turn on the enemy's back row without getting captured.\n");
+    }
+
+    private void setHowToPlayText(JTextArea htpText) {
+        htpText.setText(htpText.getText() + "\n"
+                + "To make a move, type your move into the terminal when it's your turn in this format:\n"
+                + "PieceLetter(extraDeterminer)PlaceToMoveTo.\n"
+                + "So, for example, if I wanted to move my pawn to the space b3, I would type Pb3.\n"
+                + "The extraDeterminer is required if a player is in possession of more than one piece "
+                + "of the same type that can move to the same space.\n"
+                + "For example, if I have two rooks, one on a2 and on c2, and I wanted to move the "
+                + "one ona2 to b2, I would have to type Rab2.\n"
+                + "Similarly, if I have two rooks, one on b1 and one on b3, and i "
+                + "wanted to move the one onb1 to b2, I would have to type R1b2.\n"
+                + "To place a piece down, use the format:\n"
+                + "@PieceLetterPlaceToMoveTo.\n"
+                + "So, if I wanted to place a pawn down at a2, I would type @Pa2.\n");
     }
 
     // Represents action to be taken when user wants to close the game

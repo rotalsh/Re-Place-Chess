@@ -7,6 +7,6 @@ public class Main {
         new MenuGUI();
 
         // uncomment for CLI
-        // new Menu();
+//        new Menu();
     }
 }
