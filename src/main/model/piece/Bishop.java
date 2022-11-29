@@ -16,10 +16,10 @@ public class Bishop extends Piece {
     //          along with its four diagonal moves of magnitude 1
     public Bishop(int x, int y, Team team) {
         super(x, y, team);
-        moves.add(new Vector(1, 1));
-        moves.add(new Vector(-1, 1));
-        moves.add(new Vector(1, -1));
-        moves.add(new Vector(-1, -1));
+        add(new Vector(1, 1));
+        add(new Vector(-1, 1));
+        add(new Vector(1, -1));
+        add(new Vector(-1, -1));
         magnitude = 1;
     }
 

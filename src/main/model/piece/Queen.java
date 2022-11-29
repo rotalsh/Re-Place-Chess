@@ -16,12 +16,12 @@ public class Queen extends Piece {
     //          along with its moves in all directions except the two diagonal back of magnitude 1
     public Queen(int x, int y, Team team) {
         super(x, y, team);
-        moves.add(new Vector(0, -1));
-        moves.add(new Vector(0, 1));
-        moves.add(new Vector(-1, 0));
-        moves.add(new Vector(1, 0));
-        moves.add(new Vector(1, -1));
-        moves.add(new Vector(-1, -1));
+        add(new Vector(0, -1));
+        add(new Vector(0, 1));
+        add(new Vector(-1, 0));
+        add(new Vector(1, 0));
+        add(new Vector(1, -1));
+        add(new Vector(-1, -1));
         magnitude = 1;
     }
 

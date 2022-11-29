@@ -34,6 +34,7 @@ public class JsonReaderTest {
             assertTrue(bd.getCapturedPieces().isEmpty());
             assertEquals(0, bd.getGameState());
             assertEquals(Team.WHITE, bd.getTurn());
+            assertEquals(0, bd.getTextState());
         } catch (IOException e) {
             fail("Couldn't read from file");
         }

@@ -3,7 +3,6 @@ package model;
 import model.piece.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import persistence.Writable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -13,7 +12,7 @@ import static ui.Game.capitalizeFirstOnly;
 
 // The board representing the game, keeps track of pieces on the board and in captured, whether the game has ended,
 //  whose turn it is, and the list of moves made so far
-public class Board implements Writable {
+public class Board {
     private Piece[][] boardPieces;
     private List<Piece> capturedPieces;
     private int gameState;
@@ -546,10 +545,10 @@ public class Board implements Writable {
 
     // Method name and structure taken from https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo.git
     // EFFECTS: returns a board's moves as a JSONObject
-    @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
         json.put("moves made", movesToJson());
+        json.put("text style", getTextState());
         return json;
     }
 

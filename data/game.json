@@ -1,8 +1,10 @@
-{"moves made": [
-    "Pb3",
-    "Bb3",
-    "Bb2",
-    "Ra3",
-    "Ba3",
-    "Ka3"
-]}
+{
+    "text style": 2,
+    "moves made": [
+        "Pb3",
+        "Bb3",
+        "@Pb2",
+        "@Pc3",
+        "Pb3"
+    ]
+}

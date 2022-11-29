@@ -17,7 +17,7 @@ public class Pawn extends Piece {
     //          along with its single move forward of magnitude 1
     public Pawn(int x, int y, Team team) {
         super(x, y, team);
-        moves.add(new Vector(0, -1));
+        add(new Vector(0, -1));
         magnitude = 1;
     }
 

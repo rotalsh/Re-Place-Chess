@@ -30,6 +30,11 @@ public abstract class Piece {
         moves = new ArrayList<>();
     }
 
+    // MODIFIES: this
+    // EFFECTS: adds vector to list of moves this piece can make
+    public void add(Vector vec) {
+        moves.add(vec);
+    }
 
     // REQUIRES: movePos is not null
     // EFFECTS: returns true if moving to movePos is a valid move for the piece, false otherwise
@@ -61,12 +66,12 @@ public abstract class Piece {
     public boolean canTake(Piece otherPiece) {
         if (otherPiece == null) {
             return true;
-        } else if (this.team != otherPiece.getTeam()) {
-            return true;
         } else {
-            return false;
+            return this.team != otherPiece.getTeam();
         }
     }
+
+
 
     // GETTERS
 

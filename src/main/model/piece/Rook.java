@@ -16,10 +16,10 @@ public class Rook extends Piece {
     //          along with its moves in the four cardinal directions of magnitude 1
     public Rook(int x, int y, Team team) {
         super(x, y, team);
-        moves.add(new Vector(0, -1));
-        moves.add(new Vector(0, 1));
-        moves.add(new Vector(-1, 0));
-        moves.add(new Vector(1, 0));
+        add(new Vector(0, -1));
+        add(new Vector(0, 1));
+        add(new Vector(-1, 0));
+        add(new Vector(1, 0));
         magnitude = 1;
     }
 

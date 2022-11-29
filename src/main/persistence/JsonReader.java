@@ -39,7 +39,7 @@ public class JsonReader {
         return contentBuilder.toString();
     }
 
-    // EFFECTS: parses workroom from JSON object and returns it
+    // EFFECTS: parses board from JSON object and returns it
     private Board parseBoard(JSONObject jsonObject) {
         Game game = new Game();
         JSONArray jsonArray = jsonObject.getJSONArray("moves made");
@@ -47,6 +47,7 @@ public class JsonReader {
             String move = String.valueOf(json);
             game.interpret(move);
         }
+        game.setBoardTextState(jsonObject.getInt("text style"));
         return game.getBoard();
     }
 }

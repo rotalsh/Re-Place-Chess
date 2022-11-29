@@ -229,6 +229,12 @@ public class Game {
         return board;
     }
 
+    // MODIFIES: this
+    // EFFECTS: sets the textState of board to ts
+    public void setBoardTextState(int ts) {
+        board.setTextState(ts);
+    }
+
 
     // EFFECTS: saves the board's moves to file
     private void saveBoard() {

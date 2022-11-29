@@ -123,3 +123,34 @@ Black's move Ba2 added.
 
 Tue Nov 22 15:45:19 PST 2022\
 Printing style of moves changed to Literal Moves.
+
+## Phase 4: Task 3
+
+- There is a lot of coupling between Game (CLI) and GameGUI
+  (GUI), and Menu (CLI) and MenuGUI (GUI)
+    - I copy + pasted many methods between Game and GameGUI
+  as well as Menu and MenuGUI
+    - I would definitely either want to extract common 
+  functionalities into some supertype that the CLI version
+  and the GUI version can both extend/implement, or
+  make a new class that does the Game or the Menu that
+  the CLI and GUI versions can have as fields
+- The Game/GameGUI class has to itself deal with interpreting
+moves and calling the correct Board functions to apply the 
+moves, which is not very cohesive
+  - having a new class like MoveManager/MoveInterpreter
+  that could interpret the moves for the Board/Game would
+  help fix cohesion
+- Not related to cohesion or coupling, but another thing
+I would like to refactor is to make use of 
+throwing exceptions in my methods to make moves in Board
+and using try-catch
+  - currently, the method returns null if a valid move 
+  can't be made (because this part of the code was made
+  before we learned about exceptions) and because of that,
+  the method that calls the Board's makeMove method does not
+  know why the move failed
+  - if I used proper exception throwing, a try-catch that
+  caught the different types of MoveFailedExceptions for 
+  example would allow the program to tell the user exactly why
+  their move was invalid
