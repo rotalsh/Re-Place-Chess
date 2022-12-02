@@ -130,7 +130,14 @@ Printing style of moves changed to Literal Moves.
   (GUI), and Menu (CLI) and MenuGUI (GUI)
     - I copy + pasted many methods between Game and GameGUI
   as well as Menu and MenuGUI
-    - I would definitely either want to extract common 
+    - This isn't that big of a problem since the CLI and the
+  GUI will never both be active at the same time (and also
+  because the GUI replaces the CLI in a way), but if I
+  decide to keep both and let the player choose between
+  CLI and GUI and I want to change something that's shared
+  between the CLI and GUI, I would have to change that thing
+  in both places
+    - I would either want to extract common 
   functionalities into some supertype that the CLI version
   and the GUI version can both extend/implement, or
   make a new class that does the Game or the Menu that
