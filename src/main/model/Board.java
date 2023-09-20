@@ -58,6 +58,7 @@ public class Board {
     // EFFECTS: add piece to list of captured pieces
     //          if queen, add a pawn instead
     public void addToCapturedPieces(Piece pieceAtMovePos) {
+        pieceAtMovePos.setOppositeTeam();
         if (pieceAtMovePos instanceof Queen) {
             capturedPieces.add(new Pawn(0, 0, pieceAtMovePos.getTeam()));
         } else {
@@ -195,7 +196,6 @@ public class Board {
             currPiece.placePiece(movePos);
             boardPieces[piecePos.getYcomp()][piecePos.getXcomp()] = null;
             if (pieceAtMovePos != null) {
-                pieceAtMovePos.setOppositeTeam();
                 addToCapturedPieces(pieceAtMovePos);
             }
             changeTurn();
